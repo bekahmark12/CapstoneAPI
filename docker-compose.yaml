@@ -1,0 +1,29 @@
+version: '3'
+
+services: 
+    server:
+        image: meaty/itemservice
+        container_name: itemapi
+        restart: always
+        build:
+            context: ./itemservice
+            dockerfile: Dockerfile
+        environment: 
+            - DSN=host=postgres user=admin password=pass dbname=itemcatalog port=5432 sslmode=disable
+        ports: 
+            - "8080:8080"
+        depends_on: 
+            - postgres
+    postgres:
+        image: postgres:latest
+        restart: always
+        environment: 
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+            - APP_DB_USER=admin
+            - APP_DB_PASS=pass 
+            - APP_DB_NAME=itemcatalog
+        ports:
+            - '5438:5432'
+        volumes:
+            - ./itemdb/config:/docker-entrypoint-initdb.d/
