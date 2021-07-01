@@ -1,7 +1,7 @@
 version: '3'
 
 services: 
-    server:
+    item-api:
         image: meaty/itemservice
         container_name: itemapi
         restart: always
@@ -27,3 +27,22 @@ services:
             - '5438:5432'
         volumes:
             - ./itemdb/config:/docker-entrypoint-initdb.d/
+    cart-api:
+        image: meaty/cartapi
+        container_name: cartapi
+        restart: always
+        build:
+            context: ./cartservice
+            dockerfile: Dockerfile
+        environment: 
+            - REDIS_HOST=cart-redis-db
+            - REDIS_PORT=6379
+        ports: 
+            - "8081:8080"
+        depends_on: 
+            - cart-redis-db
+            - item-api
+    cart-redis-db:
+        image: redis:alpine
+        ports: 
+            - 6379:6379
