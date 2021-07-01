@@ -23,7 +23,7 @@ func main() {
 		DB:       0,
 	})
 	sm := mux.NewRouter()
-	logger := log.New(os.Stdout, "item-service", log.LstdFlags)
+	logger := log.New(os.Stdout, "cart-service", log.LstdFlags)
 	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
 	cartHandler := handlers.NewCartHandler(logger, data.NewCartRepo(redisCli))
 
