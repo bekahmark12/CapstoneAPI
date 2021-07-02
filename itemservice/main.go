@@ -48,7 +48,7 @@ func main() {
 	deleteRouter.HandleFunc("/{id:[0-9]+}", itemHandler.DeleteItem())
 
 	server := http.Server{
-		Addr:         ":8080",
+		Addr:         os.Getenv("PORT"),
 		Handler:      ch(sm),
 		ErrorLog:     logger,
 		ReadTimeout:  5 * time.Second,

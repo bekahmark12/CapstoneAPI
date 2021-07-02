@@ -34,7 +34,7 @@ func (ch *CartHandler) PostItemToCart() http.HandlerFunc {
 		resp, err := http.Get(strings.Join([]string{"http://itemapi:8080/", strconv.Itoa(itemId)}, ""))
 		if err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
-			data.ToJSON(&generalError{err.Error()}, rw)
+			data.ToJSON(&generalError{"Failed to establish connection to Item api"}, rw)
 			return
 		}
 		defer resp.Body.Close()
@@ -42,10 +42,10 @@ func (ch *CartHandler) PostItemToCart() http.HandlerFunc {
 		data.FromJSON(&item, resp.Body)
 		qty := getURLqty(r)
 
-		err = ch.repo.AddItem(&item, qty)
-		if err != nil {
+		if err = ch.repo.AddItem(&item, qty); err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
 			data.ToJSON(&generalError{err.Error()}, rw)
+			return
 		}
 		rw.WriteHeader(http.StatusNoContent)
 
@@ -57,9 +57,46 @@ func (ch *CartHandler) GetItemCart() http.HandlerFunc {
 		rw.Header().Set("Content-Type", "application/json")
 		d, err := ch.repo.GetCart()
 		if err != nil {
-			panic(err)
+			rw.WriteHeader(http.StatusInternalServerError)
+			data.ToJSON(&generalError{"Error receiving cart"}, rw)
+			return
 		}
 		data.ToJSON(d, rw)
+	}
+}
+
+func (ch *CartHandler) DeleteItem() http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		id := getItemId(r)
+		if err := ch.repo.RemoveItem(uint(id)); err != nil {
+			rw.WriteHeader(http.StatusBadRequest)
+			data.ToJSON(&generalError{err.Error()}, rw)
+			return
+		}
+		rw.WriteHeader(http.StatusAccepted)
+	}
+}
+
+func (ch *CartHandler) PatchItemQuantity() http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		id := getItemId(r)
+		qty := getURLqty(r)
+		if err := ch.repo.UpdateItemQuantity(uint(id), qty); err != nil {
+			rw.WriteHeader(http.StatusBadRequest)
+			data.ToJSON(&generalError{err.Error()}, rw)
+			return
+		}
+		rw.WriteHeader(http.StatusAccepted)
+	}
+}
+
+func (ch *CartHandler) ClearCart() http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		if err := ch.repo.ClearCart(); err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			data.ToJSON(&generalError{"Failed to clear shopping cart"}, rw)
+		}
+		rw.WriteHeader(http.StatusAccepted)
 	}
 }
 

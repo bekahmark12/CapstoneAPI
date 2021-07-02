@@ -9,22 +9,23 @@ services:
             context: ./itemservice
             dockerfile: Dockerfile
         environment: 
-            - DSN=host=postgres user=admin password=pass dbname=itemcatalog port=5432 sslmode=disable
+            - DSN=host=postgres user=${APP_DB_USER} password=${APP_DB_PASS} dbname=${APP_DB_NAME} port=${APP_DB_PORT} sslmode=disable
+            - PORT=:${API_SERVICE_PORT}
         ports: 
-            - "8080:8080"
+            - "8080:${API_SERVICE_PORT}"
         depends_on: 
             - postgres
     postgres:
         image: postgres:latest
         restart: always
         environment: 
-            - POSTGRES_USER=postgres
-            - POSTGRES_PASSWORD=postgres
-            - APP_DB_USER=admin
-            - APP_DB_PASS=pass 
-            - APP_DB_NAME=itemcatalog
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            - APP_DB_USER=${APP_DB_USER}
+            - APP_DB_PASS=${APP_DB_PASS}
+            - APP_DB_NAME=${APP_DB_NAME}
         ports:
-            - '5438:5432'
+            - '5438:${APP_DB_PORT}'
         volumes:
             - ./itemdb/config:/docker-entrypoint-initdb.d/
     cart-api:
@@ -36,13 +37,14 @@ services:
             dockerfile: Dockerfile
         environment: 
             - REDIS_HOST=cart-redis-db
-            - REDIS_PORT=6379
+            - REDIS_PORT=${REDIS_PORT}
+            - PORT=:${API_SERVICE_PORT}
         ports: 
-            - "8081:8080"
+            - "8081:${API_SERVICE_PORT}"
         depends_on: 
             - cart-redis-db
             - item-api
     cart-redis-db:
         image: redis:alpine
         ports: 
-            - 6379:6379
+            - 6379:${REDIS_PORT}

@@ -33,8 +33,15 @@ func main() {
 	getHandler := sm.Methods(http.MethodGet).Subrouter()
 	getHandler.HandleFunc("/", cartHandler.GetItemCart())
 
+	deleteHandler := sm.Methods(http.MethodDelete).Subrouter()
+	deleteHandler.HandleFunc("/{id:[0-9]+}", cartHandler.DeleteItem())
+	deleteHandler.HandleFunc("/", cartHandler.ClearCart())
+
+	patchHandler := sm.Methods(http.MethodPatch).Subrouter()
+	patchHandler.HandleFunc("/{id:[0-9]+}", cartHandler.PatchItemQuantity())
+
 	server := http.Server{
-		Addr:         ":8080",
+		Addr:         os.Getenv("PORT"),
 		Handler:      ch(sm),
 		ErrorLog:     logger,
 		ReadTimeout:  5 * time.Second,

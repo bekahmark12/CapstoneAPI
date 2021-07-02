@@ -2,6 +2,7 @@ package data
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/go-redis/redis"
 )
@@ -12,7 +13,7 @@ type (
 	}
 
 	CartItem struct {
-		ItemName     *Item `json:"item"`
+		Item         *Item `json:"item"`
 		ItemQuantity int32 `json:"item_quantity"`
 	}
 
@@ -29,63 +30,79 @@ type (
 )
 
 func NewCartRepo(cache *redis.Client) *CartRepo {
-	cache.Set("cart", Cart{}, 0)
+	cache.Set("cart", nil, 0)
 	return &CartRepo{
 		cache: cache,
 	}
 }
 
 func (cr *CartRepo) AddItem(i *Item, qty int32) error {
-	cart := Cart{}
-	err := cr.retrieveCart(&cart)
-	if err != redis.Nil {
-		return err
+	cart, err := cr.retrieveCart()
+	if err != nil {
+		return nil
 	}
-	if cart.Products == nil {
-		cart.Products = make([]*CartItem, 0)
+	for _, it := range cart.Products {
+		if it.Item.ID == i.ID {
+			return fmt.Errorf("Item already contained in list")
+		}
 	}
 	cart.Products = append(cart.Products, &CartItem{i, qty})
-	err = cr.saveCart(&cart)
-	return err
+	return cr.saveCart(cart)
+
 }
 
 func (cr *CartRepo) RemoveItem(id uint) error {
-	var cart Cart
-	err := cr.retrieveCart(&cart)
+	cart, err := cr.retrieveCart()
 	if err != nil {
 		return err
 	}
 
 	for i, k := range cart.Products {
-		if k.ItemName.ID == id {
+		if k.Item.ID == id {
 			cart.Products = append(cart.Products[:i], cart.Products[i+1:]...)
 		}
 	}
-	err = cr.saveCart(&cart)
-	return err
+	return cr.saveCart(cart)
+
 }
 
 func (cr *CartRepo) GetCart() ([]*CartItem, error) {
-	var cart Cart
-	err := cr.retrieveCart(&cart)
-
+	cart, err := cr.retrieveCart()
 	if err != nil {
 		return nil, err
 	}
+
 	return cart.Products, nil
+}
+
+func (cr *CartRepo) UpdateItemQuantity(id uint, qty int32) error {
+	cart, err := cr.retrieveCart()
+	if err != nil {
+		return err
+	}
+	for _, i := range cart.Products {
+		if i.Item.ID == id {
+			i.ItemQuantity = qty
+		}
+	}
+	return cr.saveCart(cart)
 }
 
 func (cr *CartRepo) ClearCart() error {
 	return cr.cache.Set("cart", nil, 0).Err()
 }
 
-func (c *CartRepo) retrieveCart(cart *Cart) error {
+func (c *CartRepo) retrieveCart() (*Cart, error) {
 	val, err := c.cache.Get("cart").Result()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	err = json.Unmarshal([]byte(val), &cart)
-	return err
+	if val == "" {
+		return &Cart{[]*CartItem{}}, nil
+	}
+	outCart := Cart{}
+	err = json.Unmarshal([]byte(val), &outCart)
+	return &outCart, err
 }
 
 func (cr *CartRepo) saveCart(cart *Cart) error {
@@ -93,6 +110,5 @@ func (cr *CartRepo) saveCart(cart *Cart) error {
 	if err != nil {
 		return err
 	}
-	_, err = cr.cache.Set("cart", json, 0).Result()
-	return err
+	return cr.cache.Set("cart", json, 0).Err()
 }
