@@ -98,3 +98,12 @@ services:
         restart: always
         ports: 
             - '8083:${API_SERVICE_PORT}'
+    frontend:
+        container_name: frontend
+        build: ./react-shopping-cart
+        ports: 
+            - 3000:3000
+        stdin_open: true
+        environment: 
+            - CHOKIDAR_USEPOLLING=true
+        restart: always
