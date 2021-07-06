@@ -66,13 +66,13 @@ func (cr *CartRepo) RemoveItem(id uint) error {
 
 }
 
-func (cr *CartRepo) GetCart() ([]*CartItem, error) {
+func (cr *CartRepo) GetCart() (*Cart, error) {
 	cart, err := cr.retrieveCart()
 	if err != nil {
-		return nil, err
+		return &Cart{}, err
 	}
 
-	return cart.Products, nil
+	return cart, nil
 }
 
 func (cr *CartRepo) UpdateItemQuantity(id uint, qty int32) error {

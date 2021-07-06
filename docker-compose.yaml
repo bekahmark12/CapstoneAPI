@@ -48,3 +48,53 @@ services:
         image: redis:alpine
         ports: 
             - 6379:${REDIS_PORT}
+    order-mongo-db:
+        image: 'mongo:latest'
+        container_name: 'order-db'
+        environment: 
+            - MONGO_INITDB_DATABASE=${MONGO_DATABASE}
+            - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT}
+            - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASS}
+        volumes: 
+            - ./orderdb/init.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+        ports: 
+            - '27017-27019:27017-27019'
+    message-broker:
+        image: rabbitmq:3-management
+        hostname: rabbit 
+        ports: 
+            - '5672:5672'
+            - '15672:15672'
+    order-api:
+        container_name: orderapi
+        image: meaty/orderapi
+        build: 
+            context: ./checkoutservice
+            dockerfile: Dockerfile
+        environment: 
+            - PORT=:${API_SERVICE_PORT}
+            - MONGO_URI=mongodb://${MONGO_ROOT}:${MONGO_PASS}@order-db:27017/${MONGO_DATABASE}
+            - MONGO_DB=${MONGO_DATABASE}
+            - RABBIT_CONN=amqp://guest:guest@rabbit:5672/
+        restart: always
+        ports: 
+            - '8082:${API_SERVICE_PORT}'
+        depends_on: 
+            - message-broker
+            - order-mongo-db
+    consumer:
+        container_name: emailservice
+        image: meaty/emailservice
+        build: 
+            context: ./emailservice
+            dockerfile: Dockerfile
+        environment: 
+            - SMTP_HOST=${SMTP_HOST}
+            - SMTP_PORT=${SMTP_PORT}
+            - SMTP_USER=${SMTP_USER}
+            - SMTP_PASS=${SMTP_PASS}
+            - RABBIT_CONN=amqp://guest:guest@rabbit:5672/
+            - PORT=:${API_SERVICE_PORT}
+        restart: always
+        ports: 
+            - '8083:${API_SERVICE_PORT}'
