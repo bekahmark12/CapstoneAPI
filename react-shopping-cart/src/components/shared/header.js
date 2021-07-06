@@ -10,6 +10,7 @@ const Header = () => {
 
     return ( 
         <header className={styles.header}>
+            <Link to='/add-product'>Add New Products</Link>
             <Link to='/'>Store</Link>
             <Link to='/about'>About</Link>
             <Link to='/cart'> <CartIcon/> Cart ({itemCount})</Link>
