@@ -9,7 +9,8 @@ import (
 
 type (
 	Cart struct {
-		Products []*CartItem `json:"items_in_cart"`
+		UserEmail string      `json:"user"`
+		Products  []*CartItem `json:"items_in_cart"`
 	}
 
 	CartItem struct {
@@ -30,14 +31,14 @@ type (
 )
 
 func NewCartRepo(cache *redis.Client) *CartRepo {
-	cache.Set("cart", nil, 0)
+	// cache.Set("cart", nil, 0)
 	return &CartRepo{
 		cache: cache,
 	}
 }
 
-func (cr *CartRepo) AddItem(i *Item, qty int32) error {
-	cart, err := cr.retrieveCart()
+func (cr *CartRepo) AddItem(email string, i *Item, qty int32) error {
+	cart, err := cr.retrieveCart(email)
 	if err != nil {
 		return nil
 	}
@@ -51,8 +52,8 @@ func (cr *CartRepo) AddItem(i *Item, qty int32) error {
 
 }
 
-func (cr *CartRepo) RemoveItem(id uint) error {
-	cart, err := cr.retrieveCart()
+func (cr *CartRepo) RemoveItem(email string, id uint) error {
+	cart, err := cr.retrieveCart(email)
 	if err != nil {
 		return err
 	}
@@ -66,17 +67,17 @@ func (cr *CartRepo) RemoveItem(id uint) error {
 
 }
 
-func (cr *CartRepo) GetCart() (*Cart, error) {
-	cart, err := cr.retrieveCart()
+func (cr *CartRepo) GetCart(email string) (*Cart, error) {
+	cart, err := cr.retrieveCart(email)
 	if err != nil {
-		return &Cart{}, err
+		return nil, err
 	}
 
 	return cart, nil
 }
 
-func (cr *CartRepo) UpdateItemQuantity(id uint, qty int32) error {
-	cart, err := cr.retrieveCart()
+func (cr *CartRepo) UpdateItemQuantity(email string, id uint, qty int32) error {
+	cart, err := cr.retrieveCart(email)
 	if err != nil {
 		return err
 	}
@@ -88,17 +89,16 @@ func (cr *CartRepo) UpdateItemQuantity(id uint, qty int32) error {
 	return cr.saveCart(cart)
 }
 
-func (cr *CartRepo) ClearCart() error {
-	return cr.cache.Set("cart", nil, 0).Err()
+func (cr *CartRepo) ClearCart(email string) error {
+	return cr.cache.Set(email, Cart{email, []*CartItem{}}, 0).Err()
 }
 
-func (c *CartRepo) retrieveCart() (*Cart, error) {
-	val, err := c.cache.Get("cart").Result()
-	if err != nil {
-		return nil, err
-	}
-	if val == "" {
-		return &Cart{[]*CartItem{}}, nil
+func (c *CartRepo) retrieveCart(email string) (*Cart, error) {
+	val, err := c.cache.Get(email).Result()
+	if err == redis.Nil || val == "" {
+		newCart := Cart{email, []*CartItem{}}
+		c.cache.Set(email, newCart, 0)
+		return &newCart, nil
 	}
 	outCart := Cart{}
 	err = json.Unmarshal([]byte(val), &outCart)
@@ -110,5 +110,5 @@ func (cr *CartRepo) saveCart(cart *Cart) error {
 	if err != nil {
 		return err
 	}
-	return cr.cache.Set("cart", json, 0).Err()
+	return cr.cache.Set(cart.UserEmail, json, 0).Err()
 }

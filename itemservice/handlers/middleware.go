@@ -20,7 +20,6 @@ func (i *Item) MiddlewareValidateItem(next http.Handler) http.Handler {
 			models.ToJSON(&GeneralError{Message: err.Error()}, rw)
 			return
 		}
-		i.logger.Println(item)
 		err = item.Validate()
 		if err != nil {
 			i.logger.Println("[ERROR] validating item", err)

@@ -25,7 +25,9 @@ func main() {
 	sm := mux.NewRouter()
 	logger := log.New(os.Stdout, "cart-service", log.LstdFlags)
 	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
+
 	cartHandler := handlers.NewCartHandler(logger, data.NewCartRepo(redisCli))
+	sm.Use(cartHandler.Auth)
 
 	postHandler := sm.Methods(http.MethodPost).Subrouter()
 	postHandler.HandleFunc("/{id:[0-9]+}", cartHandler.PostItemToCart())

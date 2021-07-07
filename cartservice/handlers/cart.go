@@ -19,6 +19,10 @@ type (
 	generalError struct {
 		Message string `json:"message"`
 	}
+	clientInformation struct {
+		Email string `json:"email"`
+	}
+	keyValue struct{}
 )
 
 func NewCartHandler(l *log.Logger, r *data.CartRepo) *CartHandler {
@@ -41,8 +45,9 @@ func (ch *CartHandler) PostItemToCart() http.HandlerFunc {
 		item := data.Item{}
 		data.FromJSON(&item, resp.Body)
 		qty := getURLqty(r)
+		userInfo := r.Context().Value(keyValue{}).(clientInformation)
 
-		if err = ch.repo.AddItem(&item, qty); err != nil {
+		if err = ch.repo.AddItem(userInfo.Email, &item, qty); err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
 			data.ToJSON(&generalError{err.Error()}, rw)
 			return
@@ -55,7 +60,8 @@ func (ch *CartHandler) PostItemToCart() http.HandlerFunc {
 func (ch *CartHandler) GetItemCart() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		rw.Header().Set("Content-Type", "application/json")
-		d, err := ch.repo.GetCart()
+		userInfo := r.Context().Value(keyValue{}).(clientInformation)
+		d, err := ch.repo.GetCart(userInfo.Email)
 		if err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
 			data.ToJSON(&generalError{"Error receiving cart"}, rw)
@@ -68,7 +74,9 @@ func (ch *CartHandler) GetItemCart() http.HandlerFunc {
 func (ch *CartHandler) DeleteItem() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		id := getItemId(r)
-		if err := ch.repo.RemoveItem(uint(id)); err != nil {
+		userInfo := r.Context().Value(keyValue{}).(clientInformation)
+
+		if err := ch.repo.RemoveItem(userInfo.Email, uint(id)); err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
 			data.ToJSON(&generalError{err.Error()}, rw)
 			return
@@ -81,7 +89,9 @@ func (ch *CartHandler) PatchItemQuantity() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		id := getItemId(r)
 		qty := getURLqty(r)
-		if err := ch.repo.UpdateItemQuantity(uint(id), qty); err != nil {
+		userInfo := r.Context().Value(keyValue{}).(clientInformation)
+
+		if err := ch.repo.UpdateItemQuantity(userInfo.Email, uint(id), qty); err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
 			data.ToJSON(&generalError{err.Error()}, rw)
 			return
@@ -92,7 +102,9 @@ func (ch *CartHandler) PatchItemQuantity() http.HandlerFunc {
 
 func (ch *CartHandler) ClearCart() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
-		if err := ch.repo.ClearCart(); err != nil {
+		userInfo := r.Context().Value(keyValue{}).(clientInformation)
+
+		if err := ch.repo.ClearCart(userInfo.Email); err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
 			data.ToJSON(&generalError{"Failed to clear shopping cart"}, rw)
 		}
