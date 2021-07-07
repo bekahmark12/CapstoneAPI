@@ -21,6 +21,10 @@ type (
 	validationError struct {
 		Message map[string]string
 	}
+	clientInformation struct {
+		Email string `json:"email"`
+	}
+	userKey struct{}
 )
 
 func NewCheckOutHandler(l *log.Logger, cr *data.CheckoutRepo, broker *messaging.Messager) *Checkout {
@@ -30,11 +34,19 @@ func NewCheckOutHandler(l *log.Logger, cr *data.CheckoutRepo, broker *messaging.
 func (ch *Checkout) PostCheckout() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		ch.l.Println("POST CHECKOUT")
-		checkout := r.Context().Value(keyvalue{}).(data.Checkout)
-		resp, err := http.Get("http://cartapi:8080/")
+		checkout := r.Context().Value(userKey{}).(data.Checkout)
+		req, err := http.NewRequest("GET", "http://cartapi:8080/", nil)
 		if err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
-			data.ToJSON(&generalError{"Failed to establish connection to cart api"}, rw)
+			data.ToJSON(&generalError{err.Error()}, rw)
+			return
+		}
+		req.Header.Add("Authorization", r.Header.Get("Authorization"))
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			data.ToJSON(&generalError{err.Error()}, rw)
 			return
 		}
 		defer resp.Body.Close()

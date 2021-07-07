@@ -9,8 +9,6 @@ import (
 	"github.com/yhung-mea7/SEN300-micro/tree/main/checkoutservice/data"
 )
 
-type keyvalue struct{}
-
 func (c *Checkout) MiddlewareValidateCheckout(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		rw.Header().Set("Content-Type", "application/json")
@@ -25,8 +23,48 @@ func (c *Checkout) MiddlewareValidateCheckout(next http.Handler) http.Handler {
 			data.ToJSON(&validationError{formatValidationError(err.Error())}, rw)
 			return
 		}
-		ctx := context.WithValue(r.Context(), keyvalue{}, checkout)
+		ctx := context.WithValue(r.Context(), userKey{}, checkout)
 		r = r.WithContext(ctx)
+		next.ServeHTTP(rw, r)
+	})
+}
+
+func (ch *Checkout) Auth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		token := r.Header.Get("Authorization")
+		if token == "" {
+			rw.WriteHeader(http.StatusForbidden)
+			data.ToJSON(&generalError{"No token provided"}, rw)
+			return
+		}
+
+		req, err := http.NewRequest("GET", "http://userapi:8080/", nil)
+		if err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			data.ToJSON(&generalError{err.Error()}, rw)
+			return
+		}
+		req.Header.Add("Authorization", token)
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			data.ToJSON(&generalError{err.Error()}, rw)
+			return
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			rw.WriteHeader(http.StatusUnauthorized)
+			data.ToJSON(&generalError{"You are not authorized to make this request"}, rw)
+			return
+		}
+		// userInfo := clientInformation{}
+		// if err := data.FromJSON(&userInfo, resp.Body); err != nil {
+		// 	rw.WriteHeader(http.StatusInternalServerError)
+		// 	data.ToJSON(&generalError{err.Error()}, rw)
+		// 	return
+		// }
+
 		next.ServeHTTP(rw, r)
 	})
 }
