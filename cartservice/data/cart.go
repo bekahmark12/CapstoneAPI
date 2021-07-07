@@ -90,7 +90,7 @@ func (cr *CartRepo) UpdateItemQuantity(email string, id uint, qty int32) error {
 }
 
 func (cr *CartRepo) ClearCart(email string) error {
-	return cr.cache.Set(email, nil, 0).Err()
+	return cr.cache.Set(email, Cart{email, []*CartItem{}}, 0).Err()
 }
 
 func (c *CartRepo) retrieveCart(email string) (*Cart, error) {

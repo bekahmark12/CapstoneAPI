@@ -35,8 +35,7 @@ func (i *Item) PostItem() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		i.logger.Println("POST Item")
 		item := r.Context().Value(KeyValue{}).(models.Item)
-		err := i.repo.CreateItem(&item)
-		if err != nil {
+		if err := i.repo.CreateItem(&item); err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
 			models.ToJSON(&GeneralError{err.Error()}, rw)
 			return
@@ -50,13 +49,12 @@ func (i *Item) UpdateItem() http.HandlerFunc {
 		i.logger.Println("PUT Item")
 		id := getItemId(r)
 		item := r.Context().Value(KeyValue{}).(models.Item)
-		err := i.repo.UpdateItem(uint(id), &item)
-		if err != nil {
+		if err := i.repo.UpdateItem(uint(id), &item); err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
 			models.ToJSON(&GeneralError{err.Error()}, rw)
 			return
-		}
 
+		}
 		if item.ID == 0 {
 			rw.WriteHeader(http.StatusNotFound)
 			models.ToJSON(&GeneralError{"Item not found"}, rw)
@@ -98,12 +96,11 @@ func (i *Item) DeleteItem() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		i.logger.Println("DELETE Item")
 		id := getItemId(r)
-		err := i.repo.DeleteItem(uint(id))
-
-		if err != nil {
+		if err := i.repo.DeleteItem(uint(id)); err != nil {
 			rw.WriteHeader(http.StatusNotFound)
 			models.ToJSON(&GeneralError{err.Error()}, rw)
 			return
+
 		}
 		rw.WriteHeader(http.StatusAccepted)
 	}

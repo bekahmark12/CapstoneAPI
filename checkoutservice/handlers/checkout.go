@@ -53,7 +53,7 @@ func (ch *Checkout) PostCheckout() http.HandlerFunc {
 
 		cart := data.Cart{}
 		if err := data.FromJSON(&cart, resp.Body); err != nil {
-			rw.WriteHeader(http.StatusInternalServerError)
+			rw.WriteHeader(http.StatusBadRequest)
 			data.ToJSON(&generalError{err.Error()}, rw)
 			return
 		}
