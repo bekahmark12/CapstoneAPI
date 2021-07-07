@@ -99,7 +99,7 @@ services:
             - RABBIT_CONN=amqp://guest:guest@rabbit:5672/
         restart: always
     user-db:
-        image: postgres
+        image: postgres:13.3
         restart: always
         container_name: user-db
         environment: 
@@ -127,6 +127,10 @@ services:
         ports: 
             - ${API_SERVICE_PORT}
         restart: always
+        depends_on: 
+            - user-db
+            - message-broker
+            - nginx
     nginx:
         image: nginx:latest
         container_name: gateway
