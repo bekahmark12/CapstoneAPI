@@ -67,6 +67,8 @@ POST /login : validates user and returns token to use in other request.
 
 POST /sign-up : creates user and stores 
 
+## INSERT SCRIPT
+
 INSERT SCRIPT : 
 
 insert into items (id, title, description, price) values (1, 'Matsoft', 'Integer tincidunt ante vel ipsum. Praesent blandit lacinia erat. Vestibulum sed magna at nunc commodo placerat.', 547.6);
