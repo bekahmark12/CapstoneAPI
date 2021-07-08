@@ -13,9 +13,9 @@ type Order struct {
 	Items         *Cart  `json:"items_ordered"`
 }
 
-func (cr *CheckoutRepo) CheckoutOrder(c *Checkout, cart *Cart) error {
+func (cr *CheckoutRepo) CheckoutOrder(email string, c *Checkout, cart *Cart) error {
 	order := Order{
-		Email:         c.Email,
+		Email:         email,
 		Name:          c.Name,
 		StreetAddress: c.StreetAddress,
 		Items:         cart,

@@ -29,6 +29,7 @@ services:
             - '5438:${APP_DB_PORT}'
         volumes:
             - ./itemdb/config:/docker-entrypoint-initdb.d/
+            - ./itemdb/data:/var/lib/postgresql/data
     cart-api:
         image: meaty/cartapi
         container_name: cartapi
@@ -59,6 +60,7 @@ services:
             - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASS}
         volumes: 
             - ./orderdb/init.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+            - ./orderdb/data:/data/db
         ports: 
             - '27017-27019:27017-27019'
     message-broker:
@@ -112,6 +114,7 @@ services:
             - '5439:${APP_DB_PORT}'
         volumes:
             - ./userdb/config:/docker-entrypoint-initdb.d/
+            - ./userdb/data:/var/lib/postgresql/data
         depends_on: 
             - item-db
     user-api:
