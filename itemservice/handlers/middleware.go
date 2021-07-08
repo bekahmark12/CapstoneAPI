@@ -33,38 +33,6 @@ func (i *Item) MiddlewareValidateItem(next http.Handler) http.Handler {
 	})
 }
 
-// func (i *Item) Auth(next http.Handler) http.Handler {
-// 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-// 		token := r.Header.Get("Authorization")
-// 		if token == "" {
-// 			rw.WriteHeader(http.StatusForbidden)
-// 			models.ToJSON(&GeneralError{"No token provided"}, rw)
-// 			return
-// 		}
-// 		req, err := http.NewRequest("GET", "http://userapi:8080/", nil)
-// 		if err != nil {
-// 			rw.WriteHeader(http.StatusInternalServerError)
-// 			models.ToJSON(&GeneralError{err.Error()}, rw)
-// 			return
-// 		}
-// 		req.Header.Add("Authorization", token)
-// 		client := &http.Client{}
-// 		resp, err := client.Do(req)
-// 		if err != nil {
-// 			rw.WriteHeader(http.StatusInternalServerError)
-// 			models.ToJSON(&GeneralError{err.Error()}, rw)
-// 			return
-// 		}
-// 		defer resp.Body.Close()
-// 		i.logger.Println(resp.Body)
-// 		if resp.StatusCode != http.StatusOK {
-// 			rw.WriteHeader(http.StatusUnauthorized)
-// 			models.ToJSON(&GeneralError{"You are not authorized to make this request"}, rw)
-// 			return
-// 		}
-// 		next.ServeHTTP(rw, r)
-// 	})
-// }
 func formatValidationError(err string) map[string]string {
 	messages := strings.Split(err, "\n")
 	output := map[string]string{}

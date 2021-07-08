@@ -35,12 +35,10 @@ func main() {
 	postRouter := sm.Methods(http.MethodPost).Subrouter()
 	postRouter.HandleFunc("/", itemHandler.PostItem())
 	postRouter.Use(itemHandler.MiddlewareValidateItem)
-	// postRouter.Use(itemHandler.Auth)
 
 	putRouter := sm.Methods(http.MethodPut).Subrouter()
 	putRouter.HandleFunc("/{id:[0-9]+}", itemHandler.UpdateItem())
 	putRouter.Use(itemHandler.MiddlewareValidateItem)
-	// putRouter.Use(itemHandler.Auth)
 
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/", itemHandler.GetAllItems())
@@ -48,7 +46,6 @@ func main() {
 
 	deleteRouter := sm.Methods(http.MethodDelete).Subrouter()
 	deleteRouter.HandleFunc("/{id:[0-9]+}", itemHandler.DeleteItem())
-	// deleteRouter.Use(itemHandler.Auth)
 
 	server := http.Server{
 		Addr:         os.Getenv("PORT"),
