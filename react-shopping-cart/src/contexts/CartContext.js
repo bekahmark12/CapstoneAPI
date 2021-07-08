@@ -3,13 +3,18 @@ import { CartReducer, sumItems } from './CartReducer';
 
 export const CartContext = createContext()
 
+//WTH is local storage?!
 const storage = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : [];
 const initialState = { cartItems: storage, ...sumItems(storage), checkout: false };
 
 const CartContextProvider = ({children}) => {
 
+    //useReducer allows you to more easily update state based on previous state.
+    //when updating one piece of state that depends on another piece of state, use useReducer not useState
     const [state, dispatch] = useReducer(CartReducer, initialState)
 
+    //what is payload?
+    //dispatch = calls the reducer and uses the current state, auto grabbed by react
     const increase = payload => {
         dispatch({type: 'INCREASE', payload})
     }
@@ -42,6 +47,7 @@ const CartContextProvider = ({children}) => {
         decrease,
         clearCart,
         handleCheckout,
+        //why are they spreading the state here?
         ...state
     } 
 
