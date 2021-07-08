@@ -5,6 +5,7 @@ import styles from './ProductsGrid.module.scss';
 
 const ProductsGrid = () => {
 
+    // {} declaration = destructuring assignment, unpacking values from array or properties from objects
     const { products} = useContext(ProductsContext)
 
     return ( 
