@@ -12,8 +12,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/yhung-mea7/sen300-ex-1/handlers"
 	"github.com/yhung-mea7/sen300-ex-1/models"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	"github.com/yhung-mea7/sen300-ex-1/routes"
 )
 
 func main() {
@@ -21,31 +20,9 @@ func main() {
 	logger := log.New(os.Stdout, "item-service", log.LstdFlags)
 	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
 
-	db, err := gorm.Open(postgres.New(postgres.Config{
-		DSN:                  os.Getenv("DSN"),
-		PreferSimpleProtocol: true,
-	}), &gorm.Config{})
+	itemHandler := handlers.NewItemHandler(logger, models.NewItemRepo(os.Getenv("DSN")))
 
-	if err != nil {
-		panic(err)
-	}
-
-	itemHandler := handlers.NewItemHandler(logger, models.NewItemRepo(db))
-
-	postRouter := sm.Methods(http.MethodPost).Subrouter()
-	postRouter.HandleFunc("/", itemHandler.PostItem())
-	postRouter.Use(itemHandler.MiddlewareValidateItem)
-
-	putRouter := sm.Methods(http.MethodPut).Subrouter()
-	putRouter.HandleFunc("/{id:[0-9]+}", itemHandler.UpdateItem())
-	putRouter.Use(itemHandler.MiddlewareValidateItem)
-
-	getRouter := sm.Methods(http.MethodGet).Subrouter()
-	getRouter.HandleFunc("/", itemHandler.GetAllItems())
-	getRouter.HandleFunc("/{id:[0-9]+}", itemHandler.GetItemById())
-
-	deleteRouter := sm.Methods(http.MethodDelete).Subrouter()
-	deleteRouter.HandleFunc("/{id:[0-9]+}", itemHandler.DeleteItem())
+	routes.SetUpRoutes(sm, itemHandler)
 
 	server := http.Server{
 		Addr:         os.Getenv("PORT"),
