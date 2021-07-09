@@ -58,13 +58,51 @@ func (ch *Checkout) PostCheckout() http.HandlerFunc {
 			return
 		}
 
-		if err := ch.repo.CheckoutOrder(&checkout, &cart); err != nil {
+		req, err = http.NewRequest("GET", "http://userapi:8080/", nil)
+		if err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			data.ToJSON(&generalError{err.Error()}, rw)
+			return
+		}
+
+		req.Header.Set("Authorization", r.Header.Get("Authorization"))
+		resp, err = client.Do(req)
+		if err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			data.ToJSON(&generalError{err.Error()}, rw)
+			return
+		}
+
+		defer resp.Body.Close()
+		clientInfo := clientInformation{}
+		if err := data.FromJSON(&clientInfo, resp.Body); err != nil {
+			rw.WriteHeader(http.StatusBadRequest)
+			data.ToJSON(&generalError{err.Error()}, rw)
+			return
+		}
+		if err := ch.repo.CheckoutOrder(clientInfo.Email, &checkout, &cart); err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
 			data.ToJSON(&generalError{"Failed to submit order"}, rw)
 			return
 		}
-
-		if err := ch.broker.SubmitToMessageBroker(&messaging.Message{checkout.Name, checkout.Email, "Your order has been submitted!!"}); err != nil {
+		req, err = http.NewRequest("DELETE", "http://cartapi:8080/", nil)
+		if err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			data.ToJSON(&generalError{err.Error()}, rw)
+			return
+		}
+		req.Header.Add("Authorization", r.Header.Get("Authorization"))
+		_, err = client.Do(req)
+		if err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			data.ToJSON(&generalError{err.Error()}, rw)
+			return
+		}
+		if err := ch.broker.SubmitToMessageBroker(&messaging.Message{
+			Name:    checkout.Name,
+			Email:   clientInfo.Email,
+			Content: "Your order has been submitted!!",
+		}); err != nil {
 			ch.l.Println("Failed to submit email")
 		}
 		rw.WriteHeader(http.StatusAccepted)

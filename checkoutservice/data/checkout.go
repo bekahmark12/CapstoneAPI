@@ -12,9 +12,8 @@ import (
 type (
 	Checkout struct {
 		Name          string `json:"name" validate:"required"`
-		Email         string `json:"email" validate:"required,email"`
 		StreetAddress string `json:"street_address" validate:"required"`
-		Card          *Card  `json:"card" validate:"required"`
+		Card          *card  `json:"card" validate:"required"`
 	}
 
 	CheckoutRepo struct {

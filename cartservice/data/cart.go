@@ -20,6 +20,7 @@ type (
 
 	Item struct {
 		ID          uint    `json:"id"`
+		ImageURL    string  `json:"url"`
 		Title       string  `json:"title"`
 		Description string  `json:"description"`
 		Price       float64 `json:"price"`

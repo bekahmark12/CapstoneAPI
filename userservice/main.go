@@ -12,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/data"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/handlers"
+	"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/routes"
 )
 
 func main() {
@@ -20,17 +21,7 @@ func main() {
 	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
 	userHandler := handlers.NewUserHandler(data.NewUserRepo(os.Getenv("DSN")), os.Getenv("SECRET_KEY"), logger)
 
-	loginRouter := sm.Methods(http.MethodPost).Subrouter()
-	loginRouter.HandleFunc("/login", userHandler.Login())
-	loginRouter.Use(userHandler.MiddlewareValidateLogin)
-
-	signUpRouter := sm.Methods(http.MethodPost).Subrouter()
-	signUpRouter.HandleFunc("/sign-up", userHandler.CreateUser())
-	signUpRouter.Use(userHandler.MiddlewareValidateUser)
-
-	checkUser := sm.Methods(http.MethodGet).Subrouter()
-	checkUser.HandleFunc("/", userHandler.GetLoggedInUser())
-	checkUser.Use(userHandler.Auth)
+	routes.SetUpRoutes(sm, userHandler)
 
 	server := http.Server{
 		Addr:         os.Getenv("PORT"),

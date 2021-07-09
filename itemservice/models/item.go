@@ -2,12 +2,14 @@ package models
 
 import (
 	"github.com/go-playground/validator"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 type (
 	Item struct {
 		ID          uint    `json:"id" gorm:"primaryKey,autoIncrement"`
+		ImageURL    string  `json:"url"`
 		Title       string  `json:"title" validate:"required" gorm:"unique;not null"`
 		Description string  `json:"description"`
 		Price       float64 `json:"price" validate:"required,gte=0" gorm:"not null"`
@@ -18,7 +20,15 @@ type (
 	}
 )
 
-func NewItemRepo(db *gorm.DB) *ItemRepo {
+func NewItemRepo(dsn string) *ItemRepo {
+	db, err := gorm.Open(postgres.New(postgres.Config{
+		DSN:                  dsn,
+		PreferSimpleProtocol: true,
+	}), &gorm.Config{})
+
+	if err != nil {
+		panic(err)
+	}
 	db.AutoMigrate(&Item{})
 	return &ItemRepo{
 		DB: db,

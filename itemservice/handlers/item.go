@@ -10,54 +10,54 @@ import (
 )
 
 type (
-	Item struct {
+	ItemHandler struct {
 		logger *log.Logger
 		repo   *models.ItemRepo
 	}
-	GeneralError struct {
+	generalError struct {
 		Message string `json:"message"`
 	}
-	ValidationError struct {
+	validationError struct {
 		Message map[string]string `json:"message"`
 	}
-	KeyValue struct{}
+	keyValue struct{}
 )
 
-func NewItemHandler(l *log.Logger, r *models.ItemRepo) *Item {
-	return &Item{
+func NewItemHandler(l *log.Logger, r *models.ItemRepo) *ItemHandler {
+	return &ItemHandler{
 		logger: l,
 		repo:   r,
 	}
 
 }
 
-func (i *Item) PostItem() http.HandlerFunc {
+func (i *ItemHandler) PostItem() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		i.logger.Println("POST Item")
-		item := r.Context().Value(KeyValue{}).(models.Item)
+		item := r.Context().Value(keyValue{}).(models.Item)
 		if err := i.repo.CreateItem(&item); err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
-			models.ToJSON(&GeneralError{err.Error()}, rw)
+			models.ToJSON(&generalError{err.Error()}, rw)
 			return
 		}
 		rw.WriteHeader(http.StatusNoContent)
 	}
 }
 
-func (i *Item) UpdateItem() http.HandlerFunc {
+func (i *ItemHandler) UpdateItem() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		i.logger.Println("PUT Item")
 		id := getItemId(r)
-		item := r.Context().Value(KeyValue{}).(models.Item)
+		item := r.Context().Value(keyValue{}).(models.Item)
 		if err := i.repo.UpdateItem(uint(id), &item); err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
-			models.ToJSON(&GeneralError{err.Error()}, rw)
+			models.ToJSON(&generalError{err.Error()}, rw)
 			return
 
 		}
 		if item.ID == 0 {
 			rw.WriteHeader(http.StatusNotFound)
-			models.ToJSON(&GeneralError{"Item not found"}, rw)
+			models.ToJSON(&generalError{"Item not found"}, rw)
 			return
 		}
 
@@ -68,7 +68,7 @@ func (i *Item) UpdateItem() http.HandlerFunc {
 	}
 }
 
-func (i *Item) GetItemById() http.HandlerFunc {
+func (i *ItemHandler) GetItemById() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		i.logger.Println("GET Item BY ID")
 		rw.Header().Add("Content-type", "application/json")
@@ -76,14 +76,14 @@ func (i *Item) GetItemById() http.HandlerFunc {
 		item := i.repo.GetItemById(uint(id))
 		if item.ID == 0 {
 			rw.WriteHeader(http.StatusNotFound)
-			models.ToJSON(&GeneralError{"Item not found"}, rw)
+			models.ToJSON(&generalError{"Item not found"}, rw)
 			return
 		}
 		models.ToJSON(item, rw)
 	}
 }
 
-func (i *Item) GetAllItems() http.HandlerFunc {
+func (i *ItemHandler) GetAllItems() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		i.logger.Println("GET ALL Items")
 		rw.Header().Add("Content-type", "application/json")
@@ -92,13 +92,13 @@ func (i *Item) GetAllItems() http.HandlerFunc {
 	}
 }
 
-func (i *Item) DeleteItem() http.HandlerFunc {
+func (i *ItemHandler) DeleteItem() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		i.logger.Println("DELETE Item")
 		id := getItemId(r)
 		if err := i.repo.DeleteItem(uint(id)); err != nil {
 			rw.WriteHeader(http.StatusNotFound)
-			models.ToJSON(&GeneralError{err.Error()}, rw)
+			models.ToJSON(&generalError{err.Error()}, rw)
 			return
 
 		}
