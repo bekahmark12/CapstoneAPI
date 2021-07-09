@@ -98,7 +98,11 @@ func (ch *Checkout) PostCheckout() http.HandlerFunc {
 			data.ToJSON(&generalError{err.Error()}, rw)
 			return
 		}
-		if err := ch.broker.SubmitToMessageBroker(&messaging.Message{checkout.Name, clientInfo.Email, "Your order has been submitted!!"}); err != nil {
+		if err := ch.broker.SubmitToMessageBroker(&messaging.Message{
+			Name:    checkout.Name,
+			Email:   clientInfo.Email,
+			Content: "Your order has been submitted!!",
+		}); err != nil {
 			ch.l.Println("Failed to submit email")
 		}
 		rw.WriteHeader(http.StatusAccepted)

@@ -14,6 +14,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/cartservice/data"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/cartservice/handlers"
+	"github.com/yhung-mea7/SEN300-micro/tree/main/cartservice/routes"
 )
 
 func main() {
@@ -25,22 +26,8 @@ func main() {
 	sm := mux.NewRouter()
 	logger := log.New(os.Stdout, "cart-service", log.LstdFlags)
 	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
-
 	cartHandler := handlers.NewCartHandler(logger, data.NewCartRepo(redisCli))
-	sm.Use(cartHandler.Auth)
-
-	postHandler := sm.Methods(http.MethodPost).Subrouter()
-	postHandler.HandleFunc("/{id:[0-9]+}", cartHandler.PostItemToCart())
-
-	getHandler := sm.Methods(http.MethodGet).Subrouter()
-	getHandler.HandleFunc("/", cartHandler.GetItemCart())
-
-	deleteHandler := sm.Methods(http.MethodDelete).Subrouter()
-	deleteHandler.HandleFunc("/{id:[0-9]+}", cartHandler.DeleteItem())
-	deleteHandler.HandleFunc("/", cartHandler.ClearCart())
-
-	patchHandler := sm.Methods(http.MethodPatch).Subrouter()
-	patchHandler.HandleFunc("/{id:[0-9]+}", cartHandler.PatchItemQuantity())
+	routes.SetUpRoutes(sm, cartHandler)
 
 	server := http.Server{
 		Addr:         os.Getenv("PORT"),

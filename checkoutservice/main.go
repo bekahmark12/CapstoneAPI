@@ -13,6 +13,7 @@ import (
 	"github.com/yhung-mea7/SEN300-micro/tree/main/checkoutservice/data"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/checkoutservice/handlers"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/checkoutservice/messaging"
+	"github.com/yhung-mea7/SEN300-micro/tree/main/checkoutservice/routes"
 )
 
 func main() {
@@ -20,10 +21,7 @@ func main() {
 	logger := log.New(os.Stdout, "cart-service", log.LstdFlags)
 	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
 	checkoutHandler := handlers.NewCheckOutHandler(logger, data.NewCheckoutRepo(os.Getenv("MONGO_URI"), os.Getenv("MONGO_DB")), messaging.NewMessager(os.Getenv("RABBIT_CONN")))
-
-	postHandler := sm.Methods(http.MethodPost).Subrouter()
-	postHandler.Handle("/", checkoutHandler.PostCheckout())
-	postHandler.Use(checkoutHandler.MiddlewareValidateCheckout)
+	routes.SetUpRoutes(sm, checkoutHandler)
 
 	server := http.Server{
 		Addr:         os.Getenv("PORT"),

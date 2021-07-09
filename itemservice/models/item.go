@@ -9,6 +9,7 @@ import (
 type (
 	Item struct {
 		ID          uint    `json:"id" gorm:"primaryKey,autoIncrement"`
+		ImageURL    string  `json:"url"`
 		Title       string  `json:"title" validate:"required" gorm:"unique;not null"`
 		Description string  `json:"description"`
 		Price       float64 `json:"price" validate:"required,gte=0" gorm:"not null"`

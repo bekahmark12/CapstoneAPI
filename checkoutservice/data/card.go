@@ -7,7 +7,7 @@ import (
 	"github.com/go-playground/validator"
 )
 
-type Card struct {
+type card struct {
 	Number          string `json:"number" validate:"required,card"`
 	ExpirationMonth int    `json:"expiration_month" validate:"required,gte=1,lte=12"`
 	ExpirationYear  int    `json:"expiration_year" validate:"required,gt=0"`

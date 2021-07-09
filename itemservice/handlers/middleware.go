@@ -13,19 +13,18 @@ func (i *ItemHandler) MiddlewareValidateItem(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		rw.Header().Add("Content-Type", "application/json")
 		item := models.Item{}
-		err := models.FromJSON(&item, r.Body)
-		if err != nil {
+		if err := models.FromJSON(&item, r.Body); err != nil {
 			i.logger.Println("[ERROR] deserializing item", err)
 			rw.WriteHeader(http.StatusBadRequest)
 			models.ToJSON(&generalError{Message: err.Error()}, rw)
 			return
 		}
-		err = item.Validate()
-		if err != nil {
+		if err := item.Validate(); err != nil {
 			i.logger.Println("[ERROR] validating item", err)
 			rw.WriteHeader(http.StatusBadRequest)
 			models.ToJSON(&validationError{Message: formatValidationError(err.Error())}, rw)
 			return
+
 		}
 		ctx := context.WithValue(r.Context(), keyValue{}, item)
 		r = r.WithContext(ctx)

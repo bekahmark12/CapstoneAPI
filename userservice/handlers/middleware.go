@@ -38,13 +38,13 @@ func (uh *UserHandler) MiddlewareValidateUser(next http.Handler) http.Handler {
 		rw.Header().Add("Content-Type", "application/json")
 		User := data.User{}
 		if err := data.FromJSON(&User, r.Body); err != nil {
-			uh.log.Println("[ERROR] deserializing login", err)
+			uh.log.Println(err)
 			rw.WriteHeader(http.StatusBadRequest)
 			data.ToJSON(&generalError{err.Error()}, rw)
 			return
 		}
 		if err := User.Validate(); err != nil {
-			uh.log.Println("[ERROR] login validation failed")
+			uh.log.Println(err)
 			rw.WriteHeader(http.StatusBadRequest)
 			data.ToJSON(&validationError{formatValidationError(err.Error())}, rw)
 			return

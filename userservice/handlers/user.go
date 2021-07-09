@@ -69,12 +69,12 @@ func (uh *UserHandler) Login() http.HandlerFunc {
 
 func (uh *UserHandler) CreateUser() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
-		uh.log.Println("POST USER")
+		uh.log.Println("POST CREATE USER")
 		user := r.Context().Value(keyvalue{}).(data.User)
 		if err := uh.repo.CreateUser(&user); err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
 			uh.log.Println(err)
-			data.ToJSON(&generalError{"Unable to create user"}, rw)
+			data.ToJSON(&generalError{err.Error()}, rw)
 			return
 		}
 		rw.WriteHeader(http.StatusNoContent)
