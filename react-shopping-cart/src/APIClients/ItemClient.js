@@ -3,10 +3,7 @@ import axios from "axios";
 
      async getAllItems() {
          try {
-             const items = await axios.get("http://localhost:8080/api/items");
-             if (items.data.error) {
-                 return items.data;
-             }
+             const items = await axios.get("http://localhost:8080/api/items/");
              return items.data;
          } catch (err) {
              if (err.response) {
@@ -91,5 +88,7 @@ import axios from "axios";
              return { error: "Unexpected Error" };
          }
      }
-
  }
+
+export default new ItemClient();
+

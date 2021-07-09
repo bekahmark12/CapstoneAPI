@@ -1,11 +1,17 @@
-import React, { createContext, useState } from 'react';
+import React, {createContext, useEffect, useState} from 'react';
 import { dummyProducts } from '../services/dummy';
-export const ProductsContext = createContext()
+import ItemClient from '../APIClients/ItemClient'
+import axios from "axios";
+export const ProductsContext = createContext() ;
+
 
 const ProductsContextProvider = ({children}) => {
 
-    //API call to get all products here
-    const [products] = useState(dummyProducts);
+    // async function fetchItems() {
+    //     return ItemClient.getAllItems();
+    // }
+    //const [products] = useState(ItemClient.getAllItems);
+    const [products] = useState(dummyProducts)
 
     return ( 
         <ProductsContext.Provider value={{products}} >

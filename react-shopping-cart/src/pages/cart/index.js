@@ -29,11 +29,12 @@ const Cart = () => {
                             </div>
                         }
 
-                        { checkout && 
-                            <div className="p-3 text-center text-success">
-                                <p>Checkout successfull</p>
-                                <Link to="/" className="btn btn-outline-success btn-sm">BUY MORE</Link>
-                            </div>
+                        { checkout &&
+                            <Checkout/>
+                            // <div className="p-3 text-center text-success">
+                            //     <p>Checkout successfull</p>
+                            //     <Link to="/" className="btn btn-outline-success btn-sm">BUY MORE</Link>
+                            // </div>
                         }
                     </div>
                     {
@@ -46,7 +47,7 @@ const Cart = () => {
                                 <h3 className="m-0 txt-right">{formatNumber(total)}</h3>
                                 <hr className="my-4"/>
                                 <div className="text-center">
-                                    <button type="button" className="btn btn-primary mb-2" onClick={handleCheckout, this.Checkout}>CHECKOUT</button>
+                                    <button type="button" className="btn btn-primary mb-2" onClick={handleCheckout}>CHECKOUT</button>
                                     <button type="button" className="btn btn-outlineprimary btn-sm" onClick={clearCart}>CLEAR</button>
                                 </div>
 

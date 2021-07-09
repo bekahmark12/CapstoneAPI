@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import CheckoutSteps from '../components/CheckoutSteps';
+//import CheckoutSteps from '../components/CheckoutSteps';
 
 function Checkout(props) {
 
-  const [name, setName];
-  const [email, setEmail];
-  const [address, setAddress];
-  const [ccnumber, setCreditNumber];
-  const [expiration, setExpiration];
-  const [cvv, setCVV];
+  const [name, setName] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [address, setAddress] = useState(null);
+  const [ccnumber, setCreditNumber] = useState(null);
+  const [expiration, setExpiration] = useState(null);
+  const [cvv, setCVV] = useState(null);
 
   const dispatch = useDispatch();
-
   const submitHandler = (e) => {
     e.preventDefault();
     props.history.push('payment');
