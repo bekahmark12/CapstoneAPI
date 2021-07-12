@@ -1,14 +1,22 @@
 import axios from "axios";
-class CartClient{
 
-    static postItemToCart = async(itemId, itemQty) =>{
-        try{
-            const request = await axios.post(
-                `http://localhost:8080/api/cart/${itemId}qty=${itemQty}`,
-                { headers: { "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InRlc3RAZ21haWwuY29tIiwiZXhwIjoxNjI2MTI5NzMyLCJpc3MiOiJ1c2VyLXNlcnZpY2UifQ.f9Orlj-ZszMIaX9mWFa5h6ZcsbSdbbqPi-YGNlHM7VY" } }
+class CartClient {
+    // static async getKeys() {
+    //     return localStorage.getItem("")
+    // }
 
+<<<<<<< HEAD
             )
             return {succeeded: true, data: request.data};
+=======
+    static async postCart(item_id, quantity) {
+        try {
+            const create = await axios.post(
+                `http://localhost:8080/api/cart/${item_id}?qty=${quantity}`,
+                { headers: { "Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InRlc3RAZ21haWwuY29tIiwiZXhwIjoxNjI2MTM2NDU3LCJpc3MiOiJ1c2VyLXNlcnZpY2UifQ.XslFSleIe6OREDaxoEnE5uwODXniElLOpP46r0kttA0" } }
+            );
+            return {succeeded: true, data: create.data};
+>>>>>>> 1cedae7a01148cad4ff50af361242519d744db8c
         } catch (err) {
             if (err.response) {
                 return {succeeded: false, data: err.response};
@@ -16,7 +24,6 @@ class CartClient{
             return {succeeded: false, data: "unexpected error :("};
         }
     }
-
-
 }
-export default CartClient
+
+export default CartClient;

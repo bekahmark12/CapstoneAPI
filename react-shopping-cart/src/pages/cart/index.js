@@ -6,7 +6,8 @@ import { CartContext } from '../../contexts/CartContext';
 import { formatNumber } from '../../helpers/utils';
 import { Link } from 'react-router-dom';
 import Checkout from '../checkout';
-
+import CartClient from "../../APIClients/CartClient";
+import ProductItem from "../store/ProductItem";
 
 const Cart = () => {
     const [checkout, setCheckout] = useState(false);
@@ -14,7 +15,13 @@ const Cart = () => {
     const handleAllCheckout = () => {
         handleCheckout();
         setCheckout(true);
+        const cartItems = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : [];
+        console.log(cartItems)
+        cartItems.map(product => (
+            CartClient.postCart(product.id, product.quantity)
+        ))
     }
+
     
     return ( 
         <Layout title="Cart" description="This is the Cart page" >
