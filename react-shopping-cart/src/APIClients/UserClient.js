@@ -1,15 +1,20 @@
 import axios from "axios";
 
 class UserClient {
-    async getBearerToken(cb) {
+    static async getBearerToken(credentials) {
         try {
-            const credentials = await axios.get("http://localhost:8080/users/login/");
-            return cb(credentials.data);
+            const token = await axios.post(
+                "http://localhost:8080/users/login/",
+                JSON.stringify(credentials));
+            return token.data;
         } catch (err) {
             if (err.response) {
-                return cb(err.response.data);
+                console.log(err.response)
+                return err.response.data;
             }
-            return cb({ error: "Unexpected Error" });
+            console.log(err.response)
+            return { error: "Unexpected Error" };
         }
     }
 }
+export default UserClient

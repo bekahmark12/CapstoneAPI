@@ -3,6 +3,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import "../Styles/Login.css";
 import Layout from "../components/Layout";
+import UserClient from "../APIClients/UserClient"
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -13,8 +14,16 @@ export default function Login() {
     }
 
     function handleSubmit(event) {
+        const resp = UserClient.getBearerToken({
+            email,
+            password
+        }).then((data) => {
+            console.log(data)
+        });
         event.preventDefault();
     }
+
+
 
     return (
        <Layout title={'Login Page'} description={'Please Login.'}>
