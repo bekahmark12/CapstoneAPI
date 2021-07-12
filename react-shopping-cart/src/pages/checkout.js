@@ -10,7 +10,6 @@ import {CheckoutContext} from "../contexts/CheckoutContext";
 function Checkout(props) {
 
   const [name, setName] = useState(null);
-  const [email, setEmail] = useState(null);
   const [address, setAddress] = useState(null);
   const [ccnumber, setCreditNumber] = useState(null);
   const [expirationMonth, setExpirationMonth] = useState(null);
@@ -53,14 +52,6 @@ function Checkout(props) {
                 Name
               </label>
               <input value={name} type="text" name="name" id="name" onChange={(e) => setName(e.target.value)}>
-              </input>
-            </li>
-
-            <li>
-              <label htmlFor="email">
-                Email
-              </label>
-              <input value={email} type="text" name="email" id="email" onChange={(e) => setEmail(e.target.value)}>
               </input>
             </li>
 

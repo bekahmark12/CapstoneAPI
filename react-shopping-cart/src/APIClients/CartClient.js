@@ -1,27 +1,26 @@
 import axios from "axios";
 
 class CartClient {
+
     // static async getKeys() {
     //     return localStorage.getItem("")
     // }
 
-<<<<<<< HEAD
-            )
-            return {succeeded: true, data: request.data};
-=======
     static async postCart(item_id, quantity) {
         try {
             const create = await axios.post(
                 `http://localhost:8080/api/cart/${item_id}?qty=${quantity}`,
-                { headers: { "Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InRlc3RAZ21haWwuY29tIiwiZXhwIjoxNjI2MTM2NDU3LCJpc3MiOiJ1c2VyLXNlcnZpY2UifQ.XslFSleIe6OREDaxoEnE5uwODXniElLOpP46r0kttA0" } }
+                null,
+                { headers: {"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InRlc3RAZ21haWwuY29tIiwiZXhwIjoxNjI2MTg3NTE1LCJpc3MiOiJ1c2VyLXNlcnZpY2UifQ.nu4kOswTftX9hL5BoE8GSJtmTteeLarRhvCbKfIrrss" } }
             );
             return {succeeded: true, data: create.data};
->>>>>>> 1cedae7a01148cad4ff50af361242519d744db8c
         } catch (err) {
             if (err.response) {
+                console.log(err.response)
                 return {succeeded: false, data: err.response};
             }
-            return {succeeded: false, data: "unexpected error :("};
+            console.log(err.response)
+            return {succeeded: false, data: "unexpected error"};
         }
     }
 }
