@@ -7,15 +7,30 @@ export const ProductsContext = createContext() ;
 
 const ProductsContextProvider = ({children}) => {
 
-    // async function fetchItems() {
-    //     return ItemClient.getAllItems();
-    // }
-    //const [products] = useState(ItemClient.getAllItems);
-    const [products] = useState(dummyProducts)
+    const [products, setProducts] = useState(null);
+
+    useEffect(() => {
+        let mounted = true;
+        if (mounted) {
+            ItemClient.getAllItems((data) => {
+                if (data.constructor === Array) {
+                    setProducts(data);
+                } else {
+                    setProducts(data);
+                }
+            })
+        }
+        return () => mounted = false;
+    }, [])
+
+    if(!products){
+        return <h1>Loading...</h1>
+    }
+
+
 
     return ( 
         <ProductsContext.Provider value={{products}} >
-            //What is children? A Placeholder?
             { children }
         </ProductsContext.Provider>
      );

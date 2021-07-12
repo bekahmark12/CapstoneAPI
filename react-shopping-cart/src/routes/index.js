@@ -11,6 +11,8 @@ import NotFound from '../pages/NotFound';
 import Cart from "../pages/cart";
 import Checkout from "../pages/checkout";
 import AddProduct from "../pages/addProduct";
+import CheckoutSuccess from "../pages/CheckoutSuccess";
+import CheckoutFailure from "../pages/CheckoutFailure"
 
 const Routes = () => {
   return (
@@ -21,6 +23,8 @@ const Routes = () => {
           <Route exact path="/" component={Store}/>
           <Route path="/cart" component={Cart} />
           <Route path="/checkout" component={Checkout} />
+          <Route path="/checkout-success" component={CheckoutSuccess}/>
+          <Route path="/checkout-failure" component={CheckoutFailure}/>
           <Route path="*" component={NotFound} />
         </Switch>
     </Router>

@@ -1,15 +1,15 @@
 import axios from "axios";
  class ItemClient{
 
-     async getAllItems() {
+     async getAllItems(cb) {
          try {
              const items = await axios.get("http://localhost:8080/api/items/");
-             return items.data;
+             return cb(items.data);
          } catch (err) {
              if (err.response) {
-                 return err.response.data;
+                 return cb(err.response.data);
              }
-             return { error: "Unexpected Error" };
+             return cb({ error: "Unexpected Error" });
          }
      }
 

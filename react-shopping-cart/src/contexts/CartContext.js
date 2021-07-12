@@ -13,7 +13,7 @@ const CartContextProvider = ({children}) => {
     //when updating one piece of state that depends on another piece of state, use useReducer not useState
     const [state, dispatch] = useReducer(CartReducer, initialState)
 
-    //what is payload?
+    //what is payload/children?
     //dispatch = calls the reducer and uses the current state, auto grabbed by react
     const increase = payload => {
         dispatch({type: 'INCREASE', payload})
