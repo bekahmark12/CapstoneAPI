@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Link } from "react-router-dom";
 import { CartContext } from '../../contexts/CartContext';
 import {CartIcon} from '../icons';
-import styles from './header.module.scss';
+import styles from '../../Styles/header.module.scss';
 
 const Header = () => {
 
@@ -11,6 +11,7 @@ const Header = () => {
     return ( 
         <header className={styles.header}>
             <Link to='/add-product'>Add New Products</Link>
+            <Link to='/login'>Login</Link>
             <Link to='/'>Store</Link>
             <Link to='/about'>About</Link>
             <Link to='/cart'> <CartIcon/> Cart ({itemCount})</Link>

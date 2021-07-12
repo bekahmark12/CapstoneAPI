@@ -13,6 +13,7 @@ import Checkout from "../pages/checkout";
 import AddProduct from "../pages/addProduct";
 import CheckoutSuccess from "../pages/CheckoutSuccess";
 import CheckoutFailure from "../pages/CheckoutFailure"
+import Login from "../pages/Login"
 
 const Routes = () => {
   return (
@@ -25,6 +26,7 @@ const Routes = () => {
           <Route path="/checkout" component={Checkout} />
           <Route path="/checkout-success" component={CheckoutSuccess}/>
           <Route path="/checkout-failure" component={CheckoutFailure}/>
+          <Route path="/login" component={Login}/>
           <Route path="*" component={NotFound} />
         </Switch>
     </Router>
