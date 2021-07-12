@@ -32,7 +32,6 @@ type (
 )
 
 func NewCartRepo(cache *redis.Client) *CartRepo {
-	// cache.Set("cart", nil, 0)
 	return &CartRepo{
 		cache: cache,
 	}

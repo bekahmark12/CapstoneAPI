@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import CartClient from "../APIClients/CartClient";
-import CheckoutClient from "../APIClients/CheckoutClient";
+// import CheckoutClient from "../APIClients/CheckoutClient";
 import OrderClient from "../APIClients/OrderClient";
 import CheckoutSuccess from "./CheckoutSuccess";
 import {CheckoutContext} from "../contexts/CheckoutContext";
@@ -21,22 +21,15 @@ function Checkout(props) {
   const submitHandler = async (e) => {
     e.preventDefault();
     
-    OrderClient.postOrder(
+    const result = await OrderClient.postOrder(
         {
-          email,
-          name,
+          "name":name,
           "street_address": address,
-          "items": JSON.parse(localStorage.getItem('cart'))
-        });
-    const result = await CheckoutClient.postCheckout(
-        {
-          name,
-          "street_address": address,
-          "card": {
+          "card":{
             "number": ccnumber,
-            "expiration_month": expirationMonth,
-            "expiration_year": expirationYear,
-            cvv
+            "expiration_month":Number(expirationMonth),
+            "expiration_year":Number(expirationYear),
+            "cvv":Number(cvv)
           }
         });
 
