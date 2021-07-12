@@ -8,6 +8,7 @@ import (
 )
 
 func SetUpRoutes(sm *mux.Router, checkoutHandler *handlers.Checkout) {
+	sm.Use(checkoutHandler.Auth)
 	postHandler := sm.Methods(http.MethodPost).Subrouter()
 	postHandler.Handle("/", checkoutHandler.PostCheckout())
 	postHandler.Use(checkoutHandler.MiddlewareValidateCheckout)
