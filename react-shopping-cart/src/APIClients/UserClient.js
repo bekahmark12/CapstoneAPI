@@ -5,7 +5,8 @@ class UserClient {
         try {
             const token = await axios.post(
                 "http://localhost:8080/users/login/",
-                JSON.stringify(credentials));
+                JSON.stringify(credentials),
+                { headers: { "Content-Type": "application/json"}});
             return token.data;
         } catch (err) {
             if (err.response) {
