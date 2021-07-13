@@ -32,7 +32,6 @@ function Checkout(props) {
           }
         });
 
-        console.log(result)
 
         if(result.succeeded === true){
           history.push('checkout-success');
