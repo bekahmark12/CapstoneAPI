@@ -31,12 +31,13 @@ function Checkout(props) {
             "cvv":Number(cvv)
           }
         });
+        history.push('checkout-success');
 
-        if(result.succeeded){
-          history.push('checkout-success');
-        } else {
-          history.push('checkout-failure')
-        }
+        // if(result.succeeded){
+        //   history.push('checkout-success');
+        // } else {
+        //   history.push('checkout-failure')
+        // }
   }
 
     return <div>

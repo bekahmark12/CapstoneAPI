@@ -1,11 +1,6 @@
 import axios from "axios";
 
 class CartClient {
-
-    // static async getKeys() {
-    //     return localStorage.getItem("")
-    // }
-
     static async postCart(item_id, quantity) {
         try {
             const create = await axios.post(
