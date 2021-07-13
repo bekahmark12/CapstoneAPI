@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"time"
 
-	gohandlers "github.com/gorilla/handlers"
+	// gohandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/checkoutservice/data"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/checkoutservice/handlers"
@@ -19,13 +19,13 @@ import (
 func main() {
 	sm := mux.NewRouter()
 	logger := log.New(os.Stdout, "cart-service", log.LstdFlags)
-	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
+	// ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
 	checkoutHandler := handlers.NewCheckOutHandler(logger, data.NewCheckoutRepo(os.Getenv("MONGO_URI"), os.Getenv("MONGO_DB")), messaging.NewMessager(os.Getenv("RABBIT_CONN")))
 	routes.SetUpRoutes(sm, checkoutHandler)
 
 	server := http.Server{
 		Addr:         os.Getenv("PORT"),
-		Handler:      ch(sm),
+		Handler:      sm,
 		ErrorLog:     logger,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,

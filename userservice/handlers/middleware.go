@@ -56,6 +56,15 @@ func (uh *UserHandler) MiddlewareValidateUser(next http.Handler) http.Handler {
 
 }
 
+func (uh *UserHandler) HandleOps(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodOptions {
+			rw.WriteHeader(http.StatusOK)
+			return
+		}
+	})
+}
+
 func (uh *UserHandler) Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		rw.Header().Add("Content-Type", "application/json")

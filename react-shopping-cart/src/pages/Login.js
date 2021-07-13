@@ -13,14 +13,25 @@ export default function Login() {
         return email.length > 0 && password.length > 0;
     }
 
-    function handleSubmit(event) {
-        const resp = UserClient.getBearerToken({
-            email,
-            password
-        }).then((data) => {
-            console.log(data)
-        });
+    async function handleSubmit(event) {
         event.preventDefault();
+        try{
+            const resp = await UserClient.getBearerToken({email,password});
+            if (resp.hasOwnProperty('token')){
+                localStorage.setItem('token', `Bearer ${resp.token}`)
+            }
+        }catch(err){
+            console.error(err)
+        }
+        
+        // const resp = UserClient.getBearerToken({
+        //     email,
+        //     password
+        // }).then((data) => {
+        //     if (data.hasOwnProperty('token')){
+        //         localStorage.setItem('token', `Bearer ${data.token}`)
+        //     }
+        // });
     }
 
 

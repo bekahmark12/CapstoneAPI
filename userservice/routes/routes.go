@@ -8,8 +8,10 @@ import (
 )
 
 func SetUpRoutes(sm *mux.Router, userHandler *handlers.UserHandler) {
+	// sm.Use(userHandler.HandleOps)
+
 	loginRouter := sm.Methods(http.MethodPost).Subrouter()
-	loginRouter.HandleFunc("/login", userHandler.Login())
+	loginRouter.HandleFunc("/", userHandler.Login())
 	loginRouter.Use(userHandler.MiddlewareValidateLogin)
 
 	signUpRouter := sm.Methods(http.MethodPost).Subrouter()

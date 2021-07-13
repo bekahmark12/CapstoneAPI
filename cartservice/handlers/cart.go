@@ -107,6 +107,7 @@ func (ch *CartHandler) ClearCart() http.HandlerFunc {
 		if err := ch.repo.ClearCart(userInfo.Email); err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
 			data.ToJSON(&generalError{"Failed to clear shopping cart"}, rw)
+			return
 		}
 		rw.WriteHeader(http.StatusAccepted)
 	}
