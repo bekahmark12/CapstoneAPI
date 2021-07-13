@@ -1,7 +1,7 @@
 import React, { createContext, useReducer } from 'react';
 import { CartReducer, sumItems } from './CartReducer';
 
-export const CartContext = createContext()
+export const CartContext = createContext();
 
 const storage = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : [];
 const initialState = { cartItems: storage, ...sumItems(storage), checkout: false };
@@ -46,7 +46,6 @@ const CartContextProvider = ({children}) => {
         decrease,
         clearCart,
         handleCheckout,
-        //why are they spreading the state here?
         ...state
     } 
 

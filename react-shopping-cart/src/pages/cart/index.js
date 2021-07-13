@@ -15,13 +15,10 @@ const Cart = () => {
     const handleAllCheckout = () => {
         handleCheckout();
         setCheckout(true);
-        const cartItems = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : [];
-        console.log(cartItems)
         cartItems.map(product => (
             CartClient.postCart(product.id, product.quantity)
         ))
     }
-
     
     return ( 
         <Layout title="Cart" description="This is the Cart page" >
