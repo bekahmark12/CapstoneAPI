@@ -32,7 +32,9 @@ function Checkout(props) {
           }
         });
 
-        if(result.succeeded){
+        console.log(result)
+
+        if(result.succeeded === true){
           history.push('checkout-success');
         } else {
           history.push('checkout-failure')

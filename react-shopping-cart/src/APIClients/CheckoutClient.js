@@ -6,7 +6,7 @@ class CheckoutClient {
             const create = await axios.post(
                 "http://localhost:8080/api/checkout/",
                 JSON.stringify(item),
-                { headers: { "Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InRlc3RAZ21haWwuY29tIiwiZXhwIjoxNjI2MTg3NTE1LCJpc3MiOiJ1c2VyLXNlcnZpY2UifQ.nu4kOswTftX9hL5BoE8GSJtmTteeLarRhvCbKfIrrss" } }
+                { headers: { "Content-Type": "application/json", "Authorization": localStorage.getItem("token") } }
             );
             return {succeeded: true, data: create.data};
         } catch (err) {

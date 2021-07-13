@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis"
-	gohandlers "github.com/gorilla/handlers"
+	// gohandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/cartservice/data"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/cartservice/handlers"
@@ -25,13 +25,13 @@ func main() {
 	})
 	sm := mux.NewRouter()
 	logger := log.New(os.Stdout, "cart-service", log.LstdFlags)
-	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
+	// ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
 	cartHandler := handlers.NewCartHandler(logger, data.NewCartRepo(redisCli))
 	routes.SetUpRoutes(sm, cartHandler)
 
 	server := http.Server{
 		Addr:         os.Getenv("PORT"),
-		Handler:      ch(sm),
+		Handler:      sm,
 		ErrorLog:     logger,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,

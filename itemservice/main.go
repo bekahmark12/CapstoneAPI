@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"time"
 
-	gohandlers "github.com/gorilla/handlers"
+	// gohandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/yhung-mea7/sen300-ex-1/handlers"
 	"github.com/yhung-mea7/sen300-ex-1/models"
@@ -18,7 +18,7 @@ import (
 func main() {
 	sm := mux.NewRouter()
 	logger := log.New(os.Stdout, "item-service", log.LstdFlags)
-	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
+	// ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
 
 	itemHandler := handlers.NewItemHandler(logger, models.NewItemRepo(os.Getenv("DSN")))
 
@@ -26,7 +26,7 @@ func main() {
 
 	server := http.Server{
 		Addr:         os.Getenv("PORT"),
-		Handler:      ch(sm),
+		Handler:      sm,
 		ErrorLog:     logger,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,

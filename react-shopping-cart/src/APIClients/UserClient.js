@@ -2,9 +2,10 @@ import axios from "axios";
 
 class UserClient {
     static async getBearerToken(credentials) {
+        
         try {
             const token = await axios.post(
-                "http://localhost:8080/users/login/",
+                "http://localhost:8080/api/users/",
                 JSON.stringify(credentials),
                 { headers: { "Content-Type": "application/json"}});
             return token.data;

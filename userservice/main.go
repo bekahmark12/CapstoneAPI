@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"time"
 
-	gohandlers "github.com/gorilla/handlers"
+	// gohandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/data"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/handlers"
@@ -18,14 +18,20 @@ import (
 func main() {
 	sm := mux.NewRouter()
 	logger := log.New(os.Stdout, "user-service", log.LstdFlags)
-	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
+	// ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
+	// ch := cors.New(cors.Options{
+	// 	AllowedOrigins:   []string{"*"},
+	// 	AllowCredentials: true,
+	// 	AllowedHeaders:   []string{"*"},
+	// 	AllowedMethods:   []string{"GET", "POST", "DELETE", "OPTIONS"},
+	// })
 	userHandler := handlers.NewUserHandler(data.NewUserRepo(os.Getenv("DSN")), os.Getenv("SECRET_KEY"), logger)
 
 	routes.SetUpRoutes(sm, userHandler)
 
 	server := http.Server{
 		Addr:         os.Getenv("PORT"),
-		Handler:      ch(sm),
+		Handler:      sm,
 		ErrorLog:     logger,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,

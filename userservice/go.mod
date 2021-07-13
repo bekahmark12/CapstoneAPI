@@ -9,6 +9,7 @@ require (
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/rs/cors v1.8.0 // indirect
 	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gorm.io/driver/postgres v1.1.0
