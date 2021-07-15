@@ -31,12 +31,12 @@ func NewConsulClient(serviceId string) *ConsulClient {
 
 func (client *ConsulClient) RegisterService() error {
 	reg := new(consulapi.AgentServiceRegistration)
+	reg.Name = client.ServiceId
 	ser, err := client.LookUpService(client.ServiceId)
 	if err == nil {
 		client.ServiceId = appendId(ser.ID)
 	}
 	reg.ID = client.ServiceId
-	reg.Name = client.ServiceId
 	reg.Address = hostname()
 	port, err := strconv.Atoi(os.Getenv("PORT")[1:len(os.Getenv("PORT"))])
 	if err != nil {

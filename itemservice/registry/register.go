@@ -3,6 +3,7 @@ package registry
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 
 	consulapi "github.com/hashicorp/consul/api"
@@ -12,6 +13,11 @@ type (
 	ConsulClient struct {
 		C         *consulapi.Client
 		ServiceId string
+	}
+	Service struct {
+		Address string
+		Port    int
+		ID      string
 	}
 )
 
@@ -25,13 +31,13 @@ func NewConsulClient() *ConsulClient {
 
 func (client *ConsulClient) RegisterService(serviceId string) error {
 	reg := new(consulapi.AgentServiceRegistration)
-	_, _, err := client.LookUpService(serviceId)
+	reg.Name = serviceId
+	ser, err := client.LookUpService(serviceId)
 	if err == nil {
-		serviceId = appendId(serviceId)
+		serviceId = appendId(ser.ID)
 	}
 	client.ServiceId = serviceId
 	reg.ID = serviceId
-	reg.Name = serviceId
 	reg.Address = hostname()
 	port, err := strconv.Atoi(os.Getenv("PORT")[1:len(os.Getenv("PORT"))])
 	if err != nil {
@@ -50,18 +56,18 @@ func (client *ConsulClient) DeregisterService(serviceName string) error {
 	return client.C.Agent().ServiceDeregister(serviceName)
 }
 
-func (client *ConsulClient) LookUpService(serviceId string) (string, int, error) {
+func (client *ConsulClient) LookUpService(serviceId string) (*Service, error) {
 	services, err := client.C.Agent().Services()
 	if err != nil {
-		return "", -1, err
+		return nil, err
 	}
-	if srvc, ok := services[serviceId]; ok {
-		address := srvc.Address
-		port := srvc.Port
-		return address, port, nil
+	rx := regexp.MustCompile(fmt.Sprintf("^%s[0-9]{0,}$", serviceId))
+	for k := range services {
+		if rx.Match([]byte(k)) {
+			return &Service{services[k].Address, services[k].Port, services[k].ID}, nil
+		}
 	}
-
-	return "", -1, fmt.Errorf("No service found")
+	return nil, fmt.Errorf("No service found")
 
 }
 
