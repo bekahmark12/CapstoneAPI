@@ -6,6 +6,7 @@ import (
 
 	"github.com/yhung-mea7/SEN300-micro/tree/main/checkoutservice/data"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/checkoutservice/messaging"
+	register "github.com/yhung-mea7/SEN300-micro/tree/main/checkoutservice/register"
 )
 
 type (
@@ -13,6 +14,7 @@ type (
 		l      *log.Logger
 		repo   *data.CheckoutRepo
 		broker *messaging.Messager
+		reg    *register.ConsulClient
 	}
 
 	generalError struct {
@@ -27,15 +29,22 @@ type (
 	userKey struct{}
 )
 
-func NewCheckOutHandler(l *log.Logger, cr *data.CheckoutRepo, broker *messaging.Messager) *Checkout {
-	return &Checkout{l, cr, broker}
+func NewCheckOutHandler(l *log.Logger, cr *data.CheckoutRepo, broker *messaging.Messager, reg *register.ConsulClient) *Checkout {
+	return &Checkout{l, cr, broker, reg}
 }
 
 func (ch *Checkout) PostCheckout() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		ch.l.Println("POST CHECKOUT")
 		checkout := r.Context().Value(userKey{}).(data.Checkout)
-		req, err := http.NewRequest("GET", "http://cartapi:8080/", nil)
+		service, err := ch.reg.LookUpService("cart-service")
+		if err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			data.ToJSON(&generalError{err.Error()}, rw)
+			return
+		}
+
+		req, err := http.NewRequest("GET", service.GetHTTP(), nil)
 		if err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
 			data.ToJSON(&generalError{err.Error()}, rw)
@@ -85,7 +94,7 @@ func (ch *Checkout) PostCheckout() http.HandlerFunc {
 			data.ToJSON(&generalError{"Failed to submit order"}, rw)
 			return
 		}
-		req, err = http.NewRequest("DELETE", "http://cartapi:8080/", nil)
+		req, err = http.NewRequest("DELETE", service.GetHTTP(), nil)
 		if err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
 			data.ToJSON(&generalError{err.Error()}, rw)
@@ -106,6 +115,12 @@ func (ch *Checkout) PostCheckout() http.HandlerFunc {
 			ch.l.Println("Failed to submit email")
 		}
 		rw.WriteHeader(http.StatusAccepted)
+	}
+}
+
+func (ch *Checkout) HealthCheck() http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		data.ToJSON(&generalError{"service good to go"}, rw)
 	}
 }
 

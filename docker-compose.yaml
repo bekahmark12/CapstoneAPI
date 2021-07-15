@@ -87,6 +87,7 @@ services:
             - MONGO_URI=mongodb://${MONGO_ROOT}:${MONGO_PASS}@order-db:27017/${MONGO_DATABASE}
             - MONGO_DB=${MONGO_DATABASE}
             - RABBIT_CONN=amqp://guest:guest@rabbit:5672/
+            - CONSUL_HTTP_ADDR=consul:8500 
         restart: always
         ports: 
             - 8083:${API_SERVICE_PORT}
@@ -133,6 +134,7 @@ services:
             - DSN=host=user-db user=${APP_DB_USER} password=${APP_DB_PASS} dbname=${USER_DB_NAME} port=${APP_DB_PORT} sslmode=disable
             - PORT=:${API_SERVICE_PORT}
             - SECRET_KEY=${SECRET_KEY}
+            - CONSUL_HTTP_ADDR=consul:8500 
         ports: 
             - 8084:${API_SERVICE_PORT}
         restart: always

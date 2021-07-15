@@ -6,6 +6,7 @@ import (
 
 	"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/auth"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/data"
+	"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/register"
 	"gorm.io/gorm"
 )
 
@@ -14,6 +15,7 @@ type (
 		repo *data.UserRepo
 		jwt  *auth.JwtWrapper
 		log  *log.Logger
+		reg  *register.ConsulClient
 	}
 	generalError struct {
 		Message string `json:"message"`
@@ -26,7 +28,7 @@ type (
 	}
 )
 
-func NewUserHandler(repo *data.UserRepo, key string, log *log.Logger) *UserHandler {
+func NewUserHandler(repo *data.UserRepo, key string, log *log.Logger, reg *register.ConsulClient) *UserHandler {
 	return &UserHandler{
 		repo: repo,
 		jwt: &auth.JwtWrapper{
@@ -35,6 +37,7 @@ func NewUserHandler(repo *data.UserRepo, key string, log *log.Logger) *UserHandl
 			ExpirationHours: 24,
 		},
 		log: log,
+		reg: reg,
 	}
 }
 

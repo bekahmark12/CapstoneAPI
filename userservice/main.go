@@ -6,26 +6,22 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
-	// gohandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/data"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/handlers"
+	"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/register"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/routes"
 )
 
 func main() {
 	sm := mux.NewRouter()
 	logger := log.New(os.Stdout, "user-service", log.LstdFlags)
-	// ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
-	// ch := cors.New(cors.Options{
-	// 	AllowedOrigins:   []string{"*"},
-	// 	AllowCredentials: true,
-	// 	AllowedHeaders:   []string{"*"},
-	// 	AllowedMethods:   []string{"GET", "POST", "DELETE", "OPTIONS"},
-	// })
-	userHandler := handlers.NewUserHandler(data.NewUserRepo(os.Getenv("DSN")), os.Getenv("SECRET_KEY"), logger)
+	consulClient := register.NewConsulClient("user-service")
+
+	userHandler := handlers.NewUserHandler(data.NewUserRepo(os.Getenv("DSN")), os.Getenv("SECRET_KEY"), logger, consulClient)
 
 	routes.SetUpRoutes(sm, userHandler)
 
@@ -50,7 +46,11 @@ func main() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	signal.Notify(c, os.Kill)
+	signal.Notify(c, syscall.SIGTERM)
 	sig := <-c
+	if err := consulClient.DeregisterService(); err != nil {
+		logger.Println(err)
+	}
 	logger.Println("Got Signal:", sig)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
