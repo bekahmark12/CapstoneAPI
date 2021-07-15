@@ -14,7 +14,6 @@ type (
 		C         *consulapi.Client
 		ServiceId string
 	}
-
 	Service struct {
 		Address string
 		Port    int
