@@ -7,13 +7,14 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/go-redis/redis"
-	// gohandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/cartservice/data"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/cartservice/handlers"
+	register "github.com/yhung-mea7/SEN300-micro/tree/main/cartservice/registry"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/cartservice/routes"
 )
 
@@ -25,8 +26,11 @@ func main() {
 	})
 	sm := mux.NewRouter()
 	logger := log.New(os.Stdout, "cart-service", log.LstdFlags)
-	// ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
-	cartHandler := handlers.NewCartHandler(logger, data.NewCartRepo(redisCli))
+
+	consulClient := register.NewConsulClient("cart-service")
+	consulClient.RegisterService()
+
+	cartHandler := handlers.NewCartHandler(logger, data.NewCartRepo(redisCli), consulClient)
 	routes.SetUpRoutes(sm, cartHandler)
 
 	server := http.Server{
@@ -50,7 +54,11 @@ func main() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	signal.Notify(c, os.Kill)
+	signal.Notify(c, syscall.SIGTERM)
 	sig := <-c
+	if err := consulClient.DeregisterService(); err != nil {
+		logger.Println(err)
+	}
 	logger.Println("Got Signal:", sig)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()

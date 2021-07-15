@@ -106,6 +106,12 @@ func (i *ItemHandler) DeleteItem() http.HandlerFunc {
 	}
 }
 
+func (i *ItemHandler) HealthCheck() http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		models.ToJSON(&generalError{"Service is healthy"}, rw)
+	}
+}
+
 func getItemId(r *http.Request) int {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])

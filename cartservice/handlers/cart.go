@@ -8,12 +8,14 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/yhung-mea7/SEN300-micro/tree/main/cartservice/data"
+	register "github.com/yhung-mea7/SEN300-micro/tree/main/cartservice/registry"
 )
 
 type (
 	CartHandler struct {
 		logger *log.Logger
 		repo   *data.CartRepo
+		reg    *register.ConsulClient
 	}
 
 	generalError struct {
@@ -25,22 +27,30 @@ type (
 	keyValue struct{}
 )
 
-func NewCartHandler(l *log.Logger, r *data.CartRepo) *CartHandler {
+func NewCartHandler(l *log.Logger, r *data.CartRepo, reg *register.ConsulClient) *CartHandler {
 	return &CartHandler{
 		logger: l,
 		repo:   r,
+		reg:    reg,
 	}
 }
 
 func (ch *CartHandler) PostItemToCart() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		itemId := getItemId(r)
-		resp, err := http.Get(strings.Join([]string{"http://itemapi:8080/", strconv.Itoa(itemId)}, ""))
+		service, err := ch.reg.LookUpService("item-service")
 		if err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
 			data.ToJSON(&generalError{"Failed to establish connection to Item api"}, rw)
 			return
 		}
+		resp, err := http.Get(strings.Join([]string{service.GetHTTP(), strconv.Itoa(itemId)}, ""))
+		if err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			data.ToJSON(&generalError{"Failed to establish connection to Item api"}, rw)
+			return
+		}
+
 		defer resp.Body.Close()
 		item := data.Item{}
 		data.FromJSON(&item, resp.Body)
@@ -110,6 +120,12 @@ func (ch *CartHandler) ClearCart() http.HandlerFunc {
 			return
 		}
 		rw.WriteHeader(http.StatusAccepted)
+	}
+}
+
+func (ch *CartHandler) HealthCheck() http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		data.ToJSON(&generalError{"Service good to go"}, rw)
 	}
 }
 

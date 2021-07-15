@@ -19,6 +19,7 @@ func SetUpRoutes(sm *mux.Router, itemHandler *handlers.ItemHandler) {
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/", itemHandler.GetAllItems())
 	getRouter.HandleFunc("/{id:[0-9]+}", itemHandler.GetItemById())
+	getRouter.HandleFunc("/healthcheck", itemHandler.HealthCheck())
 
 	deleteRouter := sm.Methods(http.MethodDelete).Subrouter()
 	deleteRouter.HandleFunc("/{id:[0-9]+}", itemHandler.DeleteItem())

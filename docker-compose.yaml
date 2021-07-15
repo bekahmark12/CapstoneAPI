@@ -1,9 +1,14 @@
 version: '3'
 
 services: 
+    consul:
+        image: consul:latest
+        ports:
+            - "8300:8300"
+            - "8400:8400"
+            - "8500:8500"
     item-api:
         image: meaty/itemservice
-        container_name: itemapi
         restart: always
         build:
             context: ./itemservice
@@ -11,8 +16,9 @@ services:
         environment: 
             - DSN=host=item-db user=${APP_DB_USER} password=${APP_DB_PASS} dbname=${APP_DB_NAME} port=${APP_DB_PORT} sslmode=disable
             - PORT=:${API_SERVICE_PORT}
+            - CONSUL_HTTP_ADDR=consul:8500 
         ports: 
-            - ${API_SERVICE_PORT}
+            - 8080:${API_SERVICE_PORT}
         depends_on: 
             - item-db
     item-db:
@@ -32,8 +38,7 @@ services:
             - ./itemdb/data:/var/lib/postgresql/data
     cart-api:
         image: meaty/cartapi
-        container_name: cartapi
-        restart: always
+        restart: unless-stopped
         build:
             context: ./cartservice
             dockerfile: Dockerfile
@@ -41,8 +46,9 @@ services:
             - REDIS_HOST=cart-redis-db
             - REDIS_PORT=${REDIS_PORT}
             - PORT=:${API_SERVICE_PORT}
+            - CONSUL_HTTP_ADDR=consul:8500 
         ports: 
-            - ${API_SERVICE_PORT}
+            - 8081:${API_SERVICE_PORT}
         depends_on: 
             - cart-redis-db
             - item-api
@@ -83,7 +89,7 @@ services:
             - RABBIT_CONN=amqp://guest:guest@rabbit:5672/
         restart: always
         ports: 
-            - ${API_SERVICE_PORT}
+            - 8083:${API_SERVICE_PORT}
         depends_on: 
             - message-broker
             - order-mongo-db
@@ -128,20 +134,20 @@ services:
             - PORT=:${API_SERVICE_PORT}
             - SECRET_KEY=${SECRET_KEY}
         ports: 
-            - ${API_SERVICE_PORT}
+            - 8084:${API_SERVICE_PORT}
         restart: always
         depends_on: 
             - user-db
             - message-broker
             - nginx
-    nginx:
-        image: nginx:latest
-        container_name: gateway
-        restart: always
-        ports: 
-            - '8080:8080'
-        volumes: 
-            - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    # nginx:
+    #     image: nginx:latest
+    #     container_name: gateway
+    #     restart: always
+    #     ports: 
+    #         - '8080:8080'
+    #     volumes: 
+    #         - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     frontend:
         container_name: frontend
         build: ./react-shopping-cart

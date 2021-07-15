@@ -6,21 +6,23 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
-	// gohandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/yhung-mea7/sen300-ex-1/handlers"
 	"github.com/yhung-mea7/sen300-ex-1/models"
+	"github.com/yhung-mea7/sen300-ex-1/registry"
 	"github.com/yhung-mea7/sen300-ex-1/routes"
 )
 
 func main() {
 	sm := mux.NewRouter()
 	logger := log.New(os.Stdout, "item-service", log.LstdFlags)
-	// ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
 
 	itemHandler := handlers.NewItemHandler(logger, models.NewItemRepo(os.Getenv("DSN")))
+	consulClient := registry.NewConsulClient()
+	consulClient.RegisterService("item-service")
 
 	routes.SetUpRoutes(sm, itemHandler)
 
@@ -45,8 +47,13 @@ func main() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	signal.Notify(c, os.Kill)
+	signal.Notify(c, syscall.SIGTERM)
 	sig := <-c
+	if err := consulClient.DeregisterService(consulClient.ServiceId); err != nil {
+		logger.Println(err)
+	}
 	logger.Println("Got Signal:", sig)
+
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	server.Shutdown(ctx)
