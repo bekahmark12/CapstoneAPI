@@ -85,11 +85,11 @@ func (uh *UserHandler) CreateUser() http.HandlerFunc {
 	}
 }
 
-// func (uh *UserHandler) Options() http.HandlerFunc {
-// 	return func(rw http.ResponseWriter, r *http.Request) {
-// 		rw.WriteHeader(http.StatusOK)
-// 	}
-// }
+func (uh *UserHandler) HealthCheck() http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		data.ToJSON(&generalError{"Service good to go"}, rw)
+	}
+}
 
 func (uh *UserHandler) GetLoggedInUser() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {

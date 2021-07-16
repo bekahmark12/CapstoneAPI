@@ -16,8 +16,13 @@ func (ch *CartHandler) Auth(next http.Handler) http.Handler {
 			data.ToJSON(&generalError{"No token provided"}, rw)
 			return
 		}
-
-		req, err := http.NewRequest("GET", "http://userapi:8080/", nil)
+		serr, err := ch.reg.LookUpService("users-service")
+		if err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			data.ToJSON(&generalError{err.Error()}, rw)
+			return
+		}
+		req, err := http.NewRequest("GET", serr.GetHTTP(), nil)
 		if err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
 			data.ToJSON(&generalError{err.Error()}, rw)

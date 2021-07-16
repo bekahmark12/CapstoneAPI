@@ -66,8 +66,8 @@ func (ch *Checkout) PostCheckout() http.HandlerFunc {
 			data.ToJSON(&generalError{err.Error()}, rw)
 			return
 		}
-
-		req, err = http.NewRequest("GET", "http://userapi:8080/", nil)
+		usrSerr, _ := ch.reg.LookUpService("users-service")
+		req, err = http.NewRequest("GET", usrSerr.GetHTTP(), nil)
 		if err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
 			data.ToJSON(&generalError{err.Error()}, rw)
@@ -126,7 +126,7 @@ func (ch *Checkout) HealthCheck() http.HandlerFunc {
 
 func (ch *Checkout) GetPastCheckouts() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
-		ch.l.Panicln("GET CHECKOUT")
+		ch.l.Println("GET CHECKOUT")
 		orders, err := ch.repo.GetAllOrders()
 		if err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)

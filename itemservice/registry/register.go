@@ -48,6 +48,7 @@ func (client *ConsulClient) RegisterService(serviceId string) error {
 	reg.Check.HTTP = fmt.Sprintf("http://%s:%v/healthcheck", hostname(), port)
 	reg.Check.Interval = "5s"
 	reg.Check.Timeout = "3s"
+	reg.Tags = []string{"web"}
 	return client.C.Agent().ServiceRegister(reg)
 
 }
