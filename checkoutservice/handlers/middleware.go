@@ -23,7 +23,7 @@ func (c *Checkout) MiddlewareValidateCheckout(next http.Handler) http.Handler {
 			data.ToJSON(&validationError{formatValidationError(err.Error())}, rw)
 			return
 		}
-		ctx := context.WithValue(r.Context(), userKey{}, checkout)
+		ctx := context.WithValue(r.Context(), keyValue{}, checkout)
 		r = r.WithContext(ctx)
 		next.ServeHTTP(rw, r)
 	})
@@ -58,6 +58,15 @@ func (ch *Checkout) Auth(next http.Handler) http.Handler {
 			data.ToJSON(&generalError{"You are not authorized to make this request"}, rw)
 			return
 		}
+		userInfo := clientInformation{}
+		if err := data.FromJSON(&userInfo, resp.Body); err != nil {
+			rw.WriteHeader(http.StatusUnauthorized)
+			data.ToJSON(&generalError{"You are not authorized to make this request"}, rw)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), keyValue{}, userInfo)
+		r = r.WithContext(ctx)
 		next.ServeHTTP(rw, r)
 	})
 }

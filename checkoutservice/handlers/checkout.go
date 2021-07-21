@@ -26,7 +26,7 @@ type (
 	clientInformation struct {
 		Email string `json:"email"`
 	}
-	userKey struct{}
+	keyValue struct{}
 )
 
 func NewCheckOutHandler(l *log.Logger, cr *data.CheckoutRepo, broker *messaging.Messager, reg *register.ConsulClient) *Checkout {
@@ -36,7 +36,7 @@ func NewCheckOutHandler(l *log.Logger, cr *data.CheckoutRepo, broker *messaging.
 func (ch *Checkout) PostCheckout() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		ch.l.Println("POST CHECKOUT")
-		checkout := r.Context().Value(userKey{}).(data.Checkout)
+		checkout := r.Context().Value(keyValue{}).(data.Checkout)
 		service, err := ch.reg.LookUpService("cart-service")
 		if err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
@@ -127,7 +127,10 @@ func (ch *Checkout) HealthCheck() http.HandlerFunc {
 func (ch *Checkout) GetPastCheckouts() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		ch.l.Println("GET CHECKOUT")
-		orders, err := ch.repo.GetAllOrders()
+		rw.Header().Set("Content-type", "application/json")
+		userEmail := r.Context().Value(keyValue{}).(clientInformation)
+
+		orders, err := ch.repo.GetAllOrders(userEmail.Email)
 		if err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
 			data.ToJSON(&generalError{"Failed to receive orders"}, rw)

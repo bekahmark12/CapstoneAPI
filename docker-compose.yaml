@@ -87,7 +87,6 @@ services:
             - '5672:5672'
             - '15672:15672'
     order-api:
-        container_name: orderapi
         image: meaty/orderapi
         build: 
             context: ./checkoutservice
@@ -136,7 +135,6 @@ services:
             - item-db
     user-api:
         image: meaty/userservice
-        container_name: userapi
         build: 
             context: ./userservice
             dockerfile: Dockerfile

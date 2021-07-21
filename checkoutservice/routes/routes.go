@@ -14,7 +14,10 @@ func SetUpRoutes(sm *mux.Router, checkoutHandler *handlers.Checkout) {
 	postHandler.Use(checkoutHandler.MiddlewareValidateCheckout)
 	postHandler.Use(checkoutHandler.Auth)
 
-	getHandler := sm.Methods(http.MethodGet).Subrouter()
-	getHandler.Handle("/healthcheck", checkoutHandler.HealthCheck())
+	healthHandler := sm.Methods(http.MethodGet).Subrouter()
+	healthHandler.Handle("/healthcheck", checkoutHandler.HealthCheck())
 
+	getHandler := sm.Methods(http.MethodGet).Subrouter()
+	getHandler.Handle("/", checkoutHandler.GetPastCheckouts())
+	getHandler.Use(checkoutHandler.Auth)
 }
