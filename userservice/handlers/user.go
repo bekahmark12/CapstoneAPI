@@ -24,7 +24,8 @@ type (
 		Message map[string]string `json:"message"`
 	}
 	clientInformation struct {
-		Email string `json:"email"`
+		Email    string `json:"email"`
+		UserType int32  `json:"user_type"`
 	}
 )
 
@@ -56,7 +57,7 @@ func (uh *UserHandler) Login() http.HandlerFunc {
 			data.ToJSON(&generalError{"Invalid Login information"}, rw)
 			return
 		}
-		token, err := uh.jwt.CreateJwToken(user.Email)
+		token, err := uh.jwt.CreateJwToken(user.Email, user.UserType)
 		if err != nil {
 			uh.log.Println(err.Error())
 			rw.WriteHeader(http.StatusInternalServerError)

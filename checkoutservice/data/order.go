@@ -26,11 +26,11 @@ func (cr *CheckoutRepo) CheckoutOrder(email string, c *Checkout, cart *Cart) err
 	return err
 }
 
-func (cr *CheckoutRepo) GetAllOrders(email string) ([]*Order, error) {
+func (cr *CheckoutRepo) GetAllOrders() ([]*Order, error) {
 	orders := []*Order{}
 
 	collection := cr.client.Database(cr.dbname).Collection("orders")
-	cursor, err := collection.Find(context.TODO(), bson.M{"email": email})
+	cursor, err := collection.Find(context.TODO(), bson.D{{}})
 	if err != nil {
 		return orders, err
 	}

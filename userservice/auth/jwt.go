@@ -14,14 +14,16 @@ type (
 		ExpirationHours int64
 	}
 	JwtClaim struct {
-		Email string
+		UserType int32
+		Email    string
 		jwt.StandardClaims
 	}
 )
 
-func (j *JwtWrapper) CreateJwToken(userEmail string) (string, error) {
+func (j *JwtWrapper) CreateJwToken(userEmail string, userType int32) (string, error) {
 	claims := &JwtClaim{
-		Email: userEmail,
+		UserType: userType,
+		Email:    userEmail,
 		StandardClaims: jwt.StandardClaims{
 			Issuer:    j.Issuer,
 			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(j.ExpirationHours)).Unix(),

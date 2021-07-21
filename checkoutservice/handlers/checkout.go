@@ -24,7 +24,8 @@ type (
 		Message map[string]string
 	}
 	clientInformation struct {
-		Email string `json:"email"`
+		UserType int    `json:"user_type"`
+		Email    string `json:"email"`
 	}
 	keyValue struct{}
 )
@@ -128,9 +129,13 @@ func (ch *Checkout) GetPastCheckouts() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		ch.l.Println("GET CHECKOUT")
 		rw.Header().Set("Content-type", "application/json")
-		userEmail := r.Context().Value(keyValue{}).(clientInformation)
-
-		orders, err := ch.repo.GetAllOrders(userEmail.Email)
+		userInfo := r.Context().Value(keyValue{}).(clientInformation)
+		if userInfo.UserType != 1 {
+			rw.WriteHeader(http.StatusForbidden)
+			data.ToJSON(&generalError{"You are not authorized to view these orders"}, rw)
+			return
+		}
+		orders, err := ch.repo.GetAllOrders()
 		if err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
 			data.ToJSON(&generalError{"Failed to receive orders"}, rw)

@@ -7,17 +7,24 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	USER userType = iota
+	ADMIN
+)
+
 type (
 	User struct {
 		ID       uint   `gorm:"primaryKey,autoIncrement" json:"id"`
 		Name     string `gorm:"not null" json:"name" validate:"required"`
 		Email    string `gorm:"not null;unique" json:"email" validate:"required,email"`
 		Password string `gorm:"not null" json:"password" validate:"required"`
+		UserType int32  `gorm:"default:0" json:"user_type"`
 	}
 
 	UserRepo struct {
 		db *gorm.DB
 	}
+	userType int32
 )
 
 func NewUserRepo(connStr string) *UserRepo {

@@ -88,7 +88,7 @@ func (uh *UserHandler) Auth(next http.Handler) http.Handler {
 			data.ToJSON(&generalError{"Unauthorized"}, rw)
 			return
 		}
-		client := clientInformation{claims.Email}
+		client := clientInformation{claims.Email, claims.UserType}
 		ctx := context.WithValue(r.Context(), keyvalue{}, client)
 		r = r.WithContext(ctx)
 		next.ServeHTTP(rw, r)

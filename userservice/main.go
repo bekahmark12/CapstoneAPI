@@ -18,7 +18,7 @@ import (
 
 func main() {
 	sm := mux.NewRouter()
-	logger := log.New(os.Stdout, "user-service", log.LstdFlags)
+	logger := log.New(os.Stdout, "users-service", log.LstdFlags)
 	consulClient := register.NewConsulClient("users-service")
 	consulClient.RegisterService()
 	userHandler := handlers.NewUserHandler(data.NewUserRepo(os.Getenv("DSN")), os.Getenv("SECRET_KEY"), logger, consulClient)
