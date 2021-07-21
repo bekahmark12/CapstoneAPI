@@ -14,6 +14,7 @@ import AddProduct from "../pages/addProduct";
 import CheckoutSuccess from "../pages/CheckoutSuccess";
 import CheckoutFailure from "../pages/CheckoutFailure"
 import Login from "../pages/Login"
+import Management from "../pages/Management";
 
 const Routes = () => {
   return (
@@ -28,6 +29,7 @@ const Routes = () => {
           <Route path="/checkout-failure" component={CheckoutFailure}/>
           <Route path="/login" component={Login}/>
           <Route path="*" component={NotFound} />
+          <Route path="/management" component={Management}/>
         </Switch>
     </Router>
   );
