@@ -3,7 +3,6 @@ package register
 import (
 	"fmt"
 	"os"
-	"regexp"
 	"strconv"
 
 	consulapi "github.com/hashicorp/consul/api"
@@ -56,10 +55,9 @@ func (client *ConsulClient) LookUpService(serviceId string) (*Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	rx := regexp.MustCompile(fmt.Sprintf("^%s[0-9]{0,}$", serviceId))
-	for k := range services {
-		if rx.Match([]byte(k)) {
-			return &Service{services[k].Address, services[k].Port, services[k].ID}, nil
+	for _, k := range services {
+		if k.Service == serviceId {
+			return &Service{k.Address, k.Port, k.ID}, nil
 		}
 	}
 	return nil, fmt.Errorf("No service found")

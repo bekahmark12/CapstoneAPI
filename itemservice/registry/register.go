@@ -3,7 +3,6 @@ package registry
 import (
 	"fmt"
 	"os"
-	"regexp"
 	"strconv"
 
 	consulapi "github.com/hashicorp/consul/api"
@@ -31,12 +30,6 @@ func NewConsulClient() *ConsulClient {
 
 func (client *ConsulClient) RegisterService(serviceId string) error {
 	reg := new(consulapi.AgentServiceRegistration)
-	// reg.Name = serviceId
-	// ser, err := client.LookUpService(serviceId)
-	// if err == nil {
-	// 	serviceId = AppendId(ser.ID)
-	// }
-	// client.ServiceId = serviceId
 
 	reg.ID = hostname()
 	reg.Name = serviceId
@@ -64,10 +57,9 @@ func (client *ConsulClient) LookUpService(serviceId string) (*Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	rx := regexp.MustCompile(fmt.Sprintf("^%s[0-9]{0,}$", serviceId))
-	for k := range services {
-		if rx.Match([]byte(k)) {
-			return &Service{services[k].Address, services[k].Port, services[k].ID}, nil
+	for _, k := range services {
+		if k.Service == serviceId {
+			return &Service{k.Address, k.Port, k.ID}, nil
 		}
 	}
 	return nil, fmt.Errorf("No service found")
