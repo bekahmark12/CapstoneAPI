@@ -16,6 +16,20 @@ class OrderClient {
             return { error: "Unexpected Error" };
         }
     }
+
+    async getAllOrders(cb) {
+        try {
+            const orders = await axios.get(
+                "http://localhost:8080/api/orders/", 
+                { headers: { "Content-Type": "application/json", "Authorization": localStorage.getItem("token") }});
+            return cb(orders.data);
+        } catch (err) {
+            if (err.response) {
+                return cb(err.response.data);
+            }
+            return cb({ error: "Unexpected Error" });
+        }
+    }
 }
 
 export default OrderClient

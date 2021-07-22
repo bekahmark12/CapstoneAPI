@@ -12,9 +12,7 @@ export const sumItems = cartItems => {
 
 export const CartReducer = (state, action) => {
     switch (action.type) {
-        case "ADD_ITEM":
-            //what is this line saying??
-            if (!state.cartItems.find(item => item.id === action.payload.id)) {
+        case "ADD_ITEM":            if (!state.cartItems.find(item => item.id === action.payload.id)) {
                 state.cartItems.push({
                     ...action.payload,
                     quantity: 1
