@@ -7,10 +7,22 @@ import styles from '../../Styles/header.module.scss';
 const Header = () => {
 
     const {itemCount} = useContext(CartContext);
+    const isAdmin = localStorage.getItem('userType');
 
+    if(isAdmin == 1) {
+        return ( 
+            <header className={styles.header}>
+                <Link to='/management'>Management</Link>
+                <Link to='/add-product'>Add New Products</Link>
+                <Link to='/login'>Login</Link>
+                <Link to='/'>Store</Link>
+                <Link to='/about'>About</Link>
+                <Link to='/cart'> <CartIcon/> Cart ({itemCount})</Link>
+            </header>
+         );
+    }
     return ( 
         <header className={styles.header}>
-            <Link to='/management'>Management</Link>
             <Link to='/add-product'>Add New Products</Link>
             <Link to='/login'>Login</Link>
             <Link to='/'>Store</Link>
@@ -18,6 +30,7 @@ const Header = () => {
             <Link to='/cart'> <CartIcon/> Cart ({itemCount})</Link>
         </header>
      );
+ 
 }
  
 export default Header;

@@ -19,7 +19,8 @@ function Checkout(props) {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    
+
+    // 
     const result = await OrderClient.postOrder(
         {
           "name":name,
@@ -31,7 +32,8 @@ function Checkout(props) {
             "cvv":Number(cvv)
           }
         });
-        history.push('checkout-success');
+      console.log(result)
+      history.push('checkout-success');
 
         // if(result.succeeded){
         //   history.push('checkout-success');

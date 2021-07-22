@@ -20,6 +20,12 @@ export default function Login() {
             if (resp.hasOwnProperty('token')){
                 localStorage.setItem('token', `Bearer ${resp.token}`)
             }
+            if (resp.hasOwnProperty('user_type')){
+                localStorage.setItem('userType', resp.user_type);
+            } else {
+                console.log("Didn't receive a user type on authentication")
+            }
+            
         }catch(err){
             console.error(err)
         }

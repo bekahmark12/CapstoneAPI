@@ -20,7 +20,7 @@ class OrderClient {
     async getAllOrders(cb) {
         try {
             const orders = await axios.get(
-                "http://localhost:8080/api/orders/", 
+                "http://localhost:8080/api/order/", 
                 { headers: { "Content-Type": "application/json", "Authorization": localStorage.getItem("token") }});
             return cb(orders.data);
         } catch (err) {
