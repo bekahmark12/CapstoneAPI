@@ -129,7 +129,25 @@ func (ch *Checkout) GetPastCheckouts() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		ch.l.Println("GET CHECKOUT")
 		rw.Header().Set("Content-type", "application/json")
-		userInfo := r.Context().Value(keyValue{}).(clientInformation)
+		// userInfo := r.Context().Value(keyValue{}).(clientInformation)
+		userInfo := clientInformation{}
+		usrSerr, err := ch.reg.LookUpService("users-service")
+		if err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			data.ToJSON(&generalError{err.Error()}, rw)
+			return
+		}
+		req, _ := http.NewRequest("GET", usrSerr.GetHTTP(), nil)
+		req.Header.Set("Authorization", r.Header.Get("Authorization"))
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			data.ToJSON(&generalError{err.Error()}, rw)
+			return
+		}
+		defer resp.Body.Close()
+		data.FromJSON(&userInfo, resp.Body)
+
 		if userInfo.UserType != 1 {
 			rw.WriteHeader(http.StatusForbidden)
 			data.ToJSON(&generalError{"You are not authorized to view these orders"}, rw)
