@@ -11,8 +11,8 @@ import (
 
 type (
 	ConsulClient struct {
-		c         *consulapi.Client
-		ServiceId string
+		c           *consulapi.Client
+		ServiceName string
 	}
 	Service struct {
 		Address string
@@ -21,22 +21,18 @@ type (
 	}
 )
 
-func NewConsulClient(serviceId string) *ConsulClient {
+func NewConsulClient(serviceName string) *ConsulClient {
 	consul, err := consulapi.NewClient(consulapi.DefaultConfig())
 	if err != nil {
 		panic(err)
 	}
-	return &ConsulClient{consul, serviceId}
+	return &ConsulClient{consul, serviceName}
 }
 
 func (client *ConsulClient) RegisterService() error {
 	reg := new(consulapi.AgentServiceRegistration)
-	reg.Name = client.ServiceId
-	ser, err := client.LookUpService(client.ServiceId)
-	if err == nil {
-		client.ServiceId = appendId(ser.ID)
-	}
-	reg.ID = client.ServiceId
+	reg.Name = client.ServiceName
+	reg.ID = hostname()
 	reg.Address = hostname()
 	port, err := strconv.Atoi(os.Getenv("PORT")[1:len(os.Getenv("PORT"))])
 	if err != nil {
@@ -52,7 +48,7 @@ func (client *ConsulClient) RegisterService() error {
 }
 
 func (client *ConsulClient) DeregisterService() error {
-	return client.c.Agent().ServiceDeregister(client.ServiceId)
+	return client.c.Agent().ServiceDeregister(client.ServiceName)
 }
 
 func (client *ConsulClient) LookUpService(serviceId string) (*Service, error) {
@@ -72,15 +68,6 @@ func (client *ConsulClient) LookUpService(serviceId string) (*Service, error) {
 
 func (service *Service) GetHTTP() string {
 	return fmt.Sprintf("http://%s:%v/", service.Address, service.Port)
-}
-
-func appendId(serviceId string) string {
-	lastChar := serviceId[len(serviceId)-1:]
-	i, err := strconv.Atoi(lastChar)
-	if err != nil {
-		return fmt.Sprintf("%s%v", serviceId, 1)
-	}
-	return fmt.Sprintf("%s%v", serviceId, i+1)
 }
 
 func hostname() string {

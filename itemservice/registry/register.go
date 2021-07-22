@@ -31,13 +31,15 @@ func NewConsulClient() *ConsulClient {
 
 func (client *ConsulClient) RegisterService(serviceId string) error {
 	reg := new(consulapi.AgentServiceRegistration)
+	// reg.Name = serviceId
+	// ser, err := client.LookUpService(serviceId)
+	// if err == nil {
+	// 	serviceId = AppendId(ser.ID)
+	// }
+	// client.ServiceId = serviceId
+
+	reg.ID = hostname()
 	reg.Name = serviceId
-	ser, err := client.LookUpService(serviceId)
-	if err == nil {
-		serviceId = appendId(ser.ID)
-	}
-	client.ServiceId = serviceId
-	reg.ID = serviceId
 	reg.Address = hostname()
 	port, err := strconv.Atoi(os.Getenv("PORT")[1:len(os.Getenv("PORT"))])
 	if err != nil {
@@ -70,15 +72,6 @@ func (client *ConsulClient) LookUpService(serviceId string) (*Service, error) {
 	}
 	return nil, fmt.Errorf("No service found")
 
-}
-
-func appendId(serviceId string) string {
-	lastChar := serviceId[len(serviceId)-1:]
-	i, err := strconv.Atoi(lastChar)
-	if err != nil {
-		return fmt.Sprintf("%s%v", serviceId, 1)
-	}
-	return fmt.Sprintf("%s%v", serviceId, i+1)
 }
 
 func hostname() string {

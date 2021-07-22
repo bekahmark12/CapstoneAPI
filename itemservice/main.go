@@ -22,7 +22,9 @@ func main() {
 
 	itemHandler := handlers.NewItemHandler(logger, models.NewItemRepo(os.Getenv("DSN")))
 	consulClient := registry.NewConsulClient()
-	consulClient.RegisterService("item-service")
+	if err := consulClient.RegisterService("item-service"); err != nil {
+		logger.Println(err)
+	}
 
 	routes.SetUpRoutes(sm, itemHandler)
 
