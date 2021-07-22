@@ -18,7 +18,7 @@ type (
 		Name     string `gorm:"not null" json:"name" validate:"required"`
 		Email    string `gorm:"not null;unique" json:"email" validate:"required,email"`
 		Password string `gorm:"not null" json:"password" validate:"required"`
-		UserType int32  `gorm:"default:0" json:"user_type"`
+		UserType int32  `gorm:"default:0" json:"user_type" validate:"gte=0,lte=1"`
 	}
 
 	UserRepo struct {
