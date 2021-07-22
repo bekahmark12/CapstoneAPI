@@ -65,8 +65,8 @@ func (ch *Checkout) Auth(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), keyValue{}, userInfo)
-		r = r.WithContext(ctx)
+		// ctx := context.WithValue(r.Context(), keyValue{}, userInfo)
+		// r = r.WithContext(ctx)
 		next.ServeHTTP(rw, r)
 	})
 }
