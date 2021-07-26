@@ -19,9 +19,10 @@ class OrderClient {
 
     async getAllOrders(cb) {
         try {
+            console.log('you hit the orders get request')
             const orders = await axios.get(
                 "http://localhost:8080/api/order/", 
-                { headers: { "Content-Type": "application/json", "Authorization": localStorage.getItem("token") }});
+                { headers: {"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VyVHlwZSI6MSwiRW1haWwiOiJ0ZXN0MkBnbWFpbC5jb20iLCJleHAiOjE2MjcwNjY2NzcsImlzcyI6InVzZXItc2VydmljZSJ9.8tm5ha5LFafqFbznnSYFiOGlN5Chdq5cNIlnPjpXk1Q" }});
             return cb(orders.data);
         } catch (err) {
             if (err.response) {
@@ -32,4 +33,4 @@ class OrderClient {
     }
 }
 
-export default OrderClient
+export default new OrderClient();

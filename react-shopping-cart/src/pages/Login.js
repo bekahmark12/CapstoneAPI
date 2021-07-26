@@ -6,6 +6,7 @@ import Layout from "../components/Layout";
 import UserClient from "../APIClients/UserClient"
 
 export default function Login() {
+    console.log('you hit the login!')
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -14,19 +15,25 @@ export default function Login() {
     }
 
     async function handleSubmit(event) {
+        console.log('handleSubmit')
         event.preventDefault();
         try{
+            console.log('in the try');
             const resp = await UserClient.getBearerToken({email,password});
+            console.log('resp', resp)
             if (resp.hasOwnProperty('token')){
                 localStorage.setItem('token', `Bearer ${resp.token}`)
             }
-            if (resp.hasOwnProperty('user_type')){
-                localStorage.setItem('userType', resp.user_type);
+            const user = await UserClient.getUser();
+            console.log('UserClient.getUser', user);
+            if (user.hasOwnProperty('user_type')){
+                localStorage.setItem('userType', user.user_type);
             } else {
                 console.log("Didn't receive a user type on authentication")
             }
             
         }catch(err){
+            console.log('there was an error')
             console.error(err)
         }
         

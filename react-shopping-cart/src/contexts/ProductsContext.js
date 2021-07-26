@@ -1,6 +1,6 @@
 import React, {createContext, useEffect, useState} from 'react';
 import ItemClient from '../APIClients/ItemClient'
-import axios from "axios";
+
 export const ProductsContext = createContext() ;
 
 

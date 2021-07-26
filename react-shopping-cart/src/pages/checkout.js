@@ -4,8 +4,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import CartClient from "../APIClients/CartClient";
 // import CheckoutClient from "../APIClients/CheckoutClient";
 import OrderClient from "../APIClients/OrderClient";
-import CheckoutSuccess from "./CheckoutSuccess";
-import {CheckoutContext} from "../contexts/CheckoutContext";
 
 function Checkout(props) {
 

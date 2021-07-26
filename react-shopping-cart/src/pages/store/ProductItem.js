@@ -10,7 +10,6 @@ const ProductItem = ({product}) => {
     const isInCart = product => {
         return !!cartItems.find(item => item.id === product.id);
     }
-    console.log(product)
     return ( 
         <div className="card card-body">
 

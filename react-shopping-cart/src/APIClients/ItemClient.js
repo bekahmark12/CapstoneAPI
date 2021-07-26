@@ -1,6 +1,5 @@
 import axios from "axios";
  class ItemClient{
-
      async getAllItems(cb) {
          try {
              const items = await axios.get("http://localhost:8080/api/items/");

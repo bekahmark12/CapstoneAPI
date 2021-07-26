@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import ProductItem from './ProductItem';
 import { ProductsContext } from '../../contexts/ProductsContext';
-import styles from './ProductsGrid.module.scss';
+import styles from '../../Styles/ProductsGrid.module.scss';
 
 const ProductsGrid = () => {
 

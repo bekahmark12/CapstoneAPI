@@ -20,16 +20,18 @@ const Header = () => {
                 <Link to='/cart'> <CartIcon/> Cart ({itemCount})</Link>
             </header>
          );
+    } else {
+        return ( 
+            <header className={styles.header}>
+                <Link to='/add-product'>Add New Products</Link>
+                <Link to='/login'>Login</Link>
+                <Link to='/'>Store</Link>
+                <Link to='/about'>About</Link>
+                <Link to='/cart'> <CartIcon/> Cart ({itemCount})</Link>
+            </header>
+         );
     }
-    return ( 
-        <header className={styles.header}>
-            <Link to='/add-product'>Add New Products</Link>
-            <Link to='/login'>Login</Link>
-            <Link to='/'>Store</Link>
-            <Link to='/about'>About</Link>
-            <Link to='/cart'> <CartIcon/> Cart ({itemCount})</Link>
-        </header>
-     );
+    
  
 }
  
