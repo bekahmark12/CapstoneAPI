@@ -34,7 +34,7 @@ const OrderCard = ({ order }) => {
                 <br></br>
                 <Form>
                     <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label>Email Tracking Number:</Form.Label>
+                        <Form.Label>Enter Tracking Number:</Form.Label>
                         <Form.Control type="email" placeholder="Tracking #" />
                     </Form.Group>
 
