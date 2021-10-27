@@ -18,105 +18,6 @@ services:
             - nginx-data
         ports: 
             - 8080:80
-    item-api:
-        image: meaty/itemservice
-        restart: always
-        build:
-            context: ./itemservice
-            dockerfile: Dockerfile
-        environment: 
-            - DSN=host=item-db user=${APP_DB_USER} password=${APP_DB_PASS} dbname=${APP_DB_NAME} port=${APP_DB_PORT} sslmode=disable
-            - PORT=:${API_SERVICE_PORT}
-            - CONSUL_HTTP_ADDR=consul:8500 
-        ports: 
-            - ${API_SERVICE_PORT}
-        depends_on: 
-            - item-db
-    item-db:
-        image: postgres:latest
-        container_name: item-db
-        restart: always
-        environment: 
-            - POSTGRES_USER=${POSTGRES_USER}
-            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-            - APP_DB_USER=${APP_DB_USER}
-            - APP_DB_PASS=${APP_DB_PASS}
-            - APP_DB_NAME=${APP_DB_NAME}
-        ports:
-            - '5438:${APP_DB_PORT}'
-        volumes:
-            - ./itemdb/config:/docker-entrypoint-initdb.d/
-            - ./itemdb/data:/var/lib/postgresql/data
-    cart-api:
-        image: meaty/cartapi
-        restart: always
-        build:
-            context: ./cartservice
-            dockerfile: Dockerfile
-        environment: 
-            - REDIS_HOST=cart-redis-db
-            - REDIS_PORT=${REDIS_PORT}
-            - PORT=:${API_SERVICE_PORT}
-            - CONSUL_HTTP_ADDR=consul:8500 
-        ports: 
-            - ${API_SERVICE_PORT}
-        depends_on: 
-            - cart-redis-db
-            - item-api
-    cart-redis-db:
-        image: redis:alpine
-        container_name: cart-redis-store
-        ports: 
-            - 6379:${REDIS_PORT}
-    order-mongo-db:
-        image: 'mongo:latest'
-        container_name: 'order-db'
-        environment: 
-            - MONGO_INITDB_DATABASE=${MONGO_DATABASE}
-            - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT}
-            - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASS}
-        volumes: 
-            - ./orderdb/init.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-            - ./orderdb/data:/data/db
-        ports: 
-            - '27017-27019:27017-27019'
-    message-broker:
-        image: rabbitmq:3-management
-        container_name: message-broker
-        hostname: rabbit 
-        ports: 
-            - '5672:5672'
-            - '15672:15672'
-    order-api:
-        image: meaty/orderapi
-        build: 
-            context: ./checkoutservice
-            dockerfile: Dockerfile
-        environment: 
-            - PORT=:${API_SERVICE_PORT}
-            - MONGO_URI=mongodb://${MONGO_ROOT}:${MONGO_PASS}@order-db:27017/${MONGO_DATABASE}
-            - MONGO_DB=${MONGO_DATABASE}
-            - RABBIT_CONN=amqp://guest:guest@rabbit:5672/
-            - CONSUL_HTTP_ADDR=consul:8500 
-        restart: always
-        ports: 
-            - ${API_SERVICE_PORT}
-        depends_on: 
-            - message-broker
-            - order-mongo-db
-    consumer:
-        container_name: emailservice
-        image: meaty/emailservice
-        build: 
-            context: ./emailservice
-            dockerfile: Dockerfile
-        environment: 
-            - SMTP_HOST=${SMTP_HOST}
-            - SMTP_PORT=${SMTP_PORT}
-            - SMTP_USER=${SMTP_USER}
-            - SMTP_PASS=${SMTP_PASS}
-            - RABBIT_CONN=amqp://guest:guest@rabbit:5672/
-        restart: always
     user-db:
         image: postgres:13.3
         restart: always
@@ -135,7 +36,7 @@ services:
         depends_on: 
             - item-db
     user-api:
-        image: meaty/userservice
+        image: connect/userservice
         build: 
             context: ./userservice
             dockerfile: Dockerfile
@@ -149,13 +50,4 @@ services:
         restart: always
         depends_on: 
             - user-db
-            - message-broker
-    frontend:
-        container_name: frontend
-        build: ./react-shopping-cart
-        ports: 
-            - 3000:3000
-        stdin_open: true
-        environment: 
-            - CHOKIDAR_USEPOLLING=true
-        restart: always
+            # - message-broker
