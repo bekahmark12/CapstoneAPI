@@ -34,7 +34,6 @@ services:
             - ./userdb/config:/docker-entrypoint-initdb.d/
             - ./userdb/data:/var/lib/postgresql/data
         depends_on: 
-            - item-db
     user-api:
         image: connect/userservice
         build: 
@@ -50,4 +49,3 @@ services:
         restart: always
         depends_on: 
             - user-db
-            # - message-broker

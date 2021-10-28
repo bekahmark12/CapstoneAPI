@@ -10,10 +10,10 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/data"
-	"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/handlers"
-	"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/register"
-	"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/routes"
+	"github.com/bekahmark12/CapstoneAPI/tree/main/userservice/data"
+	"github.com/bekahmark12/CapstoneAPI/tree/main/userservice/handlers"
+	"github.com/bekahmark12/CapstoneAPI/tree/main/userservice/register"
+	"github.com/bekahmark12/CapstoneAPI/tree/main/userservice/routes"
 )
 
 func main() {

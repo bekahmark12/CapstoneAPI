@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/handlers"
+	"github.com/bekahmark12/CapstoneAPI/tree/main/userservice/handlers"
 )
 
 func SetUpRoutes(sm *mux.Router, userHandler *handlers.UserHandler) {

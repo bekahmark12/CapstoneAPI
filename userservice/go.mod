@@ -1,5 +1,4 @@
-module github.com/yhung-mea7/SEN300-micro/tree/main/userservice
-
+module github.com/bekahmark12/CapstoneAPI/tree/main/userservice
 go 1.14
 
 require (

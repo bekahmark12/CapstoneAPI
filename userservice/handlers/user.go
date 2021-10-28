@@ -4,9 +4,12 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/auth"
-	"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/data"
-	"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/register"
+	"github.com/bekahmark12/CapstoneAPI/tree/main/userservice/auth"
+	"github.com/bekahmark12/CapstoneAPI/tree/main/userservice/data"
+	"github.com/bekahmark12/CapstoneAPI/tree/main/userservice/register"
+	// "github.com/yhung-mea7/SEN300-micro/tree/main/userservice/auth"
+	//"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/data"
+	//"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/register"
 	"gorm.io/gorm"
 )
 
