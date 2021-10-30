@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
-
-	//"github.com/yhung-mea7/SEN300-micro/tree/main/userservice/data"
 	"github.com/bekahmark12/CapstoneAPI/tree/main/userservice/data"
 )
 

@@ -1,12 +1,12 @@
 version: '3'
 
 services: 
-    consul:
-        image: consul:latest
-        ports:
-            - "8300:8300"
-            - "8400:8400"
-            - "8500:8500"
+    # consul:
+    #     image: consul:latest
+    #     ports:
+    #         - "8300:8300"
+    #         - "8400:8400"
+    #         - "8500:8500"
     nginx-data:
         build:
             context: ./nginx
@@ -43,7 +43,7 @@ services:
             - DSN=host=user-db user=${APP_DB_USER} password=${APP_DB_PASS} dbname=${USER_DB_NAME} port=${APP_DB_PORT} sslmode=disable
             - PORT=:${API_SERVICE_PORT}
             - SECRET_KEY=${SECRET_KEY}
-            - CONSUL_HTTP_ADDR=consul:8500 
+            # - CONSUL_HTTP_ADDR=consul:8500 
         ports: 
             - ${API_SERVICE_PORT}
         restart: always

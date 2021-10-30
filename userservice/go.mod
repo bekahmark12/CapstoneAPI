@@ -1,4 +1,4 @@
-module github.com/bekahmark12/CapstoneAPI/tree/main/userservice
+module github.com/bekahmark12/CapstoneAPI
 go 1.14
 
 require (
