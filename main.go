@@ -10,20 +10,13 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/bekahmark12/CapstoneAPI/tree/main/userservice/data"
-	"github.com/bekahmark12/CapstoneAPI/tree/main/userservice/handlers"
-	"github.com/bekahmark12/CapstoneAPI/tree/main/userservice/register"
-	"github.com/bekahmark12/CapstoneAPI/tree/main/userservice/routes"
 )
 
 func main() {
 	sm := mux.NewRouter()
 	logger := log.New(os.Stdout, "users-service", log.LstdFlags)
-	consulClient := register.NewConsulClient("users-service")
-	consulClient.RegisterService()
-	userHandler := handlers.NewUserHandler(data.NewUserRepo(os.Getenv("DSN")), os.Getenv("SECRET_KEY"), logger, consulClient)
 
-	routes.SetUpRoutes(sm, userHandler)
+
 
 	server := http.Server{
 		Addr:         os.Getenv("PORT"),
@@ -48,9 +41,6 @@ func main() {
 	signal.Notify(c, os.Kill)
 	signal.Notify(c, syscall.SIGTERM)
 	sig := <-c
-	if err := consulClient.DeregisterService(); err != nil {
-		logger.Println(err)
-	}
 	logger.Println("Got Signal:", sig)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()

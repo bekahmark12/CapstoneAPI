@@ -1,4 +1,4 @@
-package data
+package userdata
 
 import "github.com/go-playground/validator"
 

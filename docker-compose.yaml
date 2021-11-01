@@ -1,12 +1,6 @@
 version: '3'
 
 services: 
-    # consul:
-    #     image: consul:latest
-    #     ports:
-    #         - "8300:8300"
-    #         - "8400:8400"
-    #         - "8500:8500"
     nginx-data:
         build:
             context: ./nginx
